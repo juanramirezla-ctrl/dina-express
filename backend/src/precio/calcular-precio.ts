@@ -16,17 +16,18 @@ const CONCEPTOS = [
   'ganancia',
 ] as const;
 
-export function calcularPrecio(conceptos: ConceptosPrecio): number {
-  let total = 0;
-  for (const nombre of CONCEPTOS) {
-    const valor = conceptos[nombre];
-    if (valor === undefined || valor === null) {
-      throw new Error(`Falta el concepto: ${nombre}`);
-    }
-    if (!Number.isInteger(valor) || valor < 0) {
-      throw new Error(`El concepto ${nombre} debe ser un número entero de 0 o más`);
-    }
-    total += valor;
+function validarConcepto(nombre: string, valor: unknown): void {
+  if (valor === undefined || valor === null) {
+    throw new Error(`Falta el concepto: ${nombre}`);
   }
-  return total;
+  if (typeof valor !== 'number' || !Number.isInteger(valor) || valor < 0) {
+    throw new Error(`El concepto ${nombre} debe ser un número entero de 0 o más`);
+  }
+}
+
+export function calcularPrecio(conceptos: ConceptosPrecio): number {
+  return CONCEPTOS.reduce((total, nombre) => {
+    validarConcepto(nombre, conceptos[nombre]);
+    return total + conceptos[nombre];
+  }, 0);
 }
