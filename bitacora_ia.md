@@ -32,10 +32,10 @@ Asistente usado: Claude. Proyecto: Dina Express (Node.js, TypeScript y Jest).
 
 ## Entrada 5
 - **Fecha:** 7 de noviembre de 2026
-- **Sugerencia:** Refactorizar separando una función `validarConcepto` y reemplazando el ciclo por `reduce`.
+- **Sugerencia:** Refactorizar `calcularPrecio` separando una función `validarConcepto` y reemplazando el ciclo por `reduce`.
 - **Decisión:** Aceptada
-- **Por qué:** `calcularPrecio` queda solo con la suma, la validación tiene nombre propio y se quita la variable `total` que se modificaba en el ciclo.
-- **Verificación:** Volví a ejecutar `npm test` con las mismas 7 pruebas sin tocarlas y siguieron en verde. Hice un commit aparte para el refactor.
+- **Por qué:** `calcularPrecio` queda solo con la suma y la validación tiene nombre propio. Se quita la variable `total` que se modificaba en el ciclo.
+- **Verificación:** Ejecuté `npm test` con las mismas 7 pruebas sin tocarlas y siguieron en verde. Este cambio quedó incluido en un commit anterior al del refactor final; en un segundo refactor, en su propio commit, dejé los textos de error en funciones y la condición como `esEnteroNoNegativo`, y volví a comprobar las 7 pruebas.
 
 ## Entrada 6
 - **Fecha:** 7 de noviembre de 2026
