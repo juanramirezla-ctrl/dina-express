@@ -7,7 +7,7 @@ export interface ConceptosPrecio {
   ganancia: number;
 }
 
-const CONCEPTOS = [
+const NOMBRES_CONCEPTOS = [
   'vehiculo',
   'conductor',
   'combustible',
@@ -16,17 +16,26 @@ const CONCEPTOS = [
   'ganancia',
 ] as const;
 
+const mensajeFalta = (nombre: string): string => `Falta el concepto: ${nombre}`;
+
+const mensajeInvalido = (nombre: string): string =>
+  `El concepto ${nombre} debe ser un número entero de 0 o más`;
+
+function esEnteroNoNegativo(valor: unknown): valor is number {
+  return typeof valor === 'number' && Number.isInteger(valor) && valor >= 0;
+}
+
 function validarConcepto(nombre: string, valor: unknown): void {
   if (valor === undefined || valor === null) {
-    throw new Error(`Falta el concepto: ${nombre}`);
+    throw new Error(mensajeFalta(nombre));
   }
-  if (typeof valor !== 'number' || !Number.isInteger(valor) || valor < 0) {
-    throw new Error(`El concepto ${nombre} debe ser un número entero de 0 o más`);
+  if (!esEnteroNoNegativo(valor)) {
+    throw new Error(mensajeInvalido(nombre));
   }
 }
 
 export function calcularPrecio(conceptos: ConceptosPrecio): number {
-  return CONCEPTOS.reduce((total, nombre) => {
+  return NOMBRES_CONCEPTOS.reduce((total, nombre) => {
     validarConcepto(nombre, conceptos[nombre]);
     return total + conceptos[nombre];
   }, 0);
