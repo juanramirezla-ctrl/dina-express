@@ -1,53 +1,76 @@
 # Dina Express
 
-Sistema web para recibir y gestionar solicitudes de transporte de Dina Express.
-Arquitectura: Ionic y Angular, API en Node.js y PostgreSQL (ADR-001).
+## 1. Qué es
+Sistema web para recibir y gestionar solicitudes de transporte de Dina Express. Una persona natural envía su solicitud por la página web y la coordinadora de transporte calcula el precio, revisa la disponibilidad de vehículos y conductores y registra los pagos. Arquitectura (ADR-001): aplicación Ionic y Angular, API en Node.js y base de datos PostgreSQL.
 
-## Funcionalidad de la semana 5
+Estado: primer incremento. Está lista la función de cálculo del precio (HU-02) con sus pruebas y su revisión de seguridad. La API con NestJS y la aplicación Ionic están en desarrollo.
 
-### Historia de usuario HU-02 (Must)
-Como coordinadora de transporte, quiero calcular el precio de un viaje a partir del gasto del vehículo, el del conductor, el combustible, el mantenimiento, los gastos administrativos y la ganancia, para dar un precio al cliente.
+## 2. Requisitos
+- Node.js 20 o superior y npm
+- Git
+- PostgreSQL 16 o superior (solo para la base de datos de la carpeta `database`)
 
-**Criterios de aceptación**
-- Escenario 1: precio calculado. Dado que un viaje tiene vehículo $200.000, conductor $150.000, combustible $300.000, mantenimiento $50.000, gastos administrativos $100.000 y ganancia de $80.000, cuando calculo el precio, entonces el sistema muestra un precio de $880.000.
-- Escenario 2 (error): falta un concepto. Dado que estoy calculando un viaje, cuando dejo vacío el combustible, entonces el sistema no calcula y me indica que falta el combustible.
+## 3. Instalación
+```
+git clone https://github.com/juanramirezla-ctrl/dina-express.git
+cd dina-express/backend
+npm install
+```
+Variables de entorno: copia `.env.example` a `.env` y completa los valores. El archivo `.env` no se sube al repositorio.
 
-### Contrato de la función
+Base de datos (opcional por ahora): crea la base `dina_express` y ejecuta en orden los scripts de `database/`.
 
-Archivo: `backend/src/precio/calcular-precio.ts`
+## 4. Ejecución
+El incremento actual es una función; se ejecuta mediante sus pruebas (sección 5).
+
+**Funcionalidad: `calcularPrecio` (HU-02).** Como coordinadora de transporte, quiero calcular el precio de un viaje a partir de sus seis conceptos, para dar un precio al cliente.
 
 ```ts
-export interface ConceptosPrecio {
-  vehiculo: number;
-  conductor: number;
-  combustible: number;
-  mantenimiento: number;
-  gastosAdministrativos: number;
-  ganancia: number;
-}
+import { calcularPrecio } from './src/precio/calcular-precio';
 
-export function calcularPrecio(conceptos: ConceptosPrecio): number
+calcularPrecio({
+  vehiculo: 200000, conductor: 150000, combustible: 300000,
+  mantenimiento: 50000, gastosAdministrativos: 100000, ganancia: 80000,
+}); // 880000
 ```
-
-- **Recibe:** un objeto con los seis conceptos del precio, cada uno en pesos colombianos.
-- **Devuelve:** el precio total en pesos, que es la suma de los seis conceptos.
-- **Supuestos:** cada concepto es un número entero de 0 o más. La ganancia es un valor fijo en pesos, no un porcentaje (pregunta P-02 pendiente con la clienta).
-- **Casos límite:** ganancia en 0; todos los conceptos en 0.
-- **Errores:** si falta un concepto lanza `Error('Falta el concepto: <nombre>')`. Si un concepto es negativo, tiene decimales o no es un número lanza `Error('El concepto <nombre> debe ser un número entero de 0 o más')`.
-
-### Ejemplos
 
 | Entrada | Salida |
 |---|---|
-| vehiculo 200000, conductor 150000, combustible 300000, mantenimiento 50000, gastosAdministrativos 100000, ganancia 80000 | 880000 |
-| los mismos valores con ganancia 0 | 800000 |
-| los mismos valores sin combustible | Error: Falta el concepto: combustible |
-| los mismos valores con mantenimiento -50000 | Error: El concepto mantenimiento debe ser un número entero de 0 o más |
+| Los seis conceptos del ejemplo | 880000 |
+| Los mismos con `ganancia` en 0 | 800000 |
+| Sin `combustible` | Error: Falta el concepto: combustible |
+| `mantenimiento` en -50000 | Error: El concepto mantenimiento debe ser un número entero de 0 o más |
+| Sin objeto de conceptos | Error: Se necesitan los conceptos del precio |
 
-### Cómo ejecutar las pruebas
+Supuestos: los valores son enteros de pesos, de 0 o más; la ganancia es un valor fijo (pendiente de confirmar con la clienta).
 
+## 5. Pruebas
 ```
 cd backend
-npm install
 npm test
+npm run lint
 ```
+Hay 12 pruebas: casos normales, de límite, de error y de abuso. El linter usa ESLint con `eslint-plugin-security` y queda sin avisos.
+
+## 6. Estructura
+```
+dina-express/
+├── backend/
+│   ├── src/precio/
+│   │   ├── calcular-precio.ts
+│   │   ├── calcular-precio.spec.ts
+│   │   └── calcular-precio.seguridad.spec.ts
+│   ├── eslint.config.mjs
+│   ├── jest.config.js
+│   └── tsconfig.json
+├── database/             esquema y datos de prueba (PostgreSQL)
+├── bitacora_ia.md        uso de IA, entradas por semana
+├── revision_seguridad.md informe de revisión de código y seguridad
+└── .env.example
+```
+
+## 7. Uso de IA
+Se usó Claude como asistente para el contrato, las pruebas, la implementación, el refactor, la revisión de seguridad y los borradores de docstrings y README. Cada sugerencia se verificó con pruebas o comandos. El detalle está en `bitacora_ia.md` y en `revision_seguridad.md`.
+
+## 8. Autor y licencia
+Juan José Ramírez Lasso, Fundación Escuela Tecnológica de Neiva (FET). Proyecto académico del seminario de IA aplicada al ciclo de vida del software. Licencia: uso académico, todos los derechos reservados.

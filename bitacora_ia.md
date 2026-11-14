@@ -75,3 +75,9 @@ El asistente me ayudó más a armar el contrato y las pruebas a partir de los cr
 - **Verificación:** Comparé cada `@throws` con las pruebas de error. Cada mensaje documentado aparece en una prueba.
 
 No usé un agente de código en esta semana.
+## Entrada 11 (semana 6)
+- **Fecha:** 14 de noviembre de 2026
+- **Sugerencia:** Ignorar `.env` y `.env.*` en el `.gitignore`.
+- **Decisión:** Ajustada
+- **Por qué:** La regla `.env.*` también ignoraba `.env.example`, que sí debe subirse. Agregué la línea `!.env.example`.
+- **Verificación:** Al hacer el commit, Git dijo «nothing to commit». Comprobé con `git check-ignore -v .env.example` que ya no estaba ignorado y el archivo apareció en GitHub.
