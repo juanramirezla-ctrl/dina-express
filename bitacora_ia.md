@@ -46,3 +46,32 @@ Asistente usado: Claude. Proyecto: Dina Express (Node.js, TypeScript y Jest).
 
 ## Reflexión final
 El asistente me ayudó más a armar el contrato y las pruebas a partir de los criterios Gherkin de HU-02, porque ya tenía los números del ejemplo ($880.000) y pude convertirlos en pruebas rápido. En la fase en rojo, las 7 pruebas fallaron como se esperaba, lo que confirmó que probaban algo real. Las pruebas también me sirvieron en el refactor: demostraron que cambiar el código no cambió su comportamiento. Lo que más tiempo me quitó fue la configuración del entorno, con el error del script de pruebas. En la próxima funcionalidad ejecutaría `npm test` con una prueba mínima antes de escribir el resto. También le preguntaría a la clienta si la ganancia es un valor fijo o un porcentaje, porque mi contrato asume un valor fijo.
+## Entrada 7 (semana 6)
+- **Fecha:** 14 de noviembre de 2026
+- **Sugerencia:** Revisar `calcular-precio.ts` con corrección y pruebas, diseño y legibilidad y seguridad, con tabla de hallazgos por línea y severidad, separando problemas seguros de sospechas.
+- **Decisión:** Aceptada, después de verificar cada hallazgo
+- **Por qué:** Encontró dos problemas reales (conceptos nulos y enteros fuera de rango seguro) y tres sospechas que luego clasifiqué.
+- **Verificación:** Escribí pruebas de abuso antes de corregir. Cuatro fallaron con el código anterior, lo que confirmó H-01 y H-02. Las otras tres sospechas las revisé a mano: dos son falsos positivos y una no se corrige porque no hay requisito.
+
+## Entrada 8 (semana 6)
+- **Fecha:** 14 de noviembre de 2026
+- **Sugerencia:** Corregir con `Number.isSafeInteger`, validar que `conceptos` sea un objeto y comprobar que el total sea seguro.
+- **Decisión:** Aceptada
+- **Por qué:** Corrige los dos hallazgos reales sin cambiar el contrato: los mensajes de error anteriores son los mismos.
+- **Verificación:** Las 7 pruebas de la semana 5 pasaron sin modificarlas y las 5 pruebas nuevas también (12 en total). El linter quedó sin avisos.
+
+## Entrada 9 (semana 6)
+- **Fecha:** 14 de noviembre de 2026
+- **Sugerencia:** Poner un tope máximo de negocio al precio total.
+- **Decisión:** Rechazada
+- **Por qué:** La clienta no ha dado ningún límite; inventarlo sería un requisito sin cita. Quedó en pendientes del informe.
+- **Verificación:** Revisé mis requisitos de la semana 3 y las preguntas pendientes: no hay ninguna frase que pida un tope.
+
+## Entrada 10 (semana 6)
+- **Fecha:** 14 de noviembre de 2026
+- **Sugerencia:** Escribir docstrings con qué hace, qué recibe, qué devuelve y qué errores lanza.
+- **Decisión:** Ajustada
+- **Por qué:** Cambié las partes que no coincidían con el código, por ejemplo, el máximo se refiere a `Number.MAX_SAFE_INTEGER`.
+- **Verificación:** Comparé cada `@throws` con las pruebas de error. Cada mensaje documentado aparece en una prueba.
+
+No usé un agente de código en esta semana.
