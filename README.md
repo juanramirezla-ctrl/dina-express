@@ -50,7 +50,7 @@ cd backend
 npm test
 npm run lint
 ```
-Hay 12 pruebas: casos normales, de límite, de error y de abuso. El linter usa ESLint con `eslint-plugin-security` y queda sin avisos.
+Hay 84 pruebas: casos normales, de límite, de error y de abuso. El linter usa ESLint con `eslint-plugin-security` y queda sin avisos.
 
 ## 6. Estructura
 ```
@@ -74,3 +74,9 @@ Se usó Claude como asistente para el contrato, las pruebas, la implementación,
 
 ## 8. Autor y licencia
 Juan José Ramírez Lasso, Fundación Escuela Tecnológica de Neiva (FET). Proyecto académico del seminario de IA aplicada al ciclo de vida del software. Licencia: uso académico, todos los derechos reservados.
+
+## Metodología y ciclo de vida
+- **Ramas:** `main` es la versión estable. `api-nestjs` (API base) y `pruebas-semana-7` (suite de pruebas) se integran con pull request y no se borran, para conservar el historial.
+- **Ciclo por funcionalidad:** reglas del cliente, diseño de casos, pruebas, implementación, refactor, revisión de seguridad e integración.
+- **Commits pequeños,** con un mensaje que dice qué cambió.
+- **Uso de IA con revisión humana:** `bitacora_ia.md` y `registro_pruebas.md`.
