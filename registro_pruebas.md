@@ -87,7 +87,16 @@ Se completa en el paso 6, después de revisar cada prueba con las tres preguntas
 
 | Prueba | Decisión | Razón | Qué hice en su lugar |
 |---|---|---|---|
-| (pendiente) | | | |
+| PRE-01 | Descartada (redundante) | Misma entrada y mismo esperado que «suma los seis conceptos del ejemplo de HU-02» en src/precio/calcular-precio.spec.ts | Queda cubierta por la prueba original |
+| PRE-02 | Descartada (redundante) | Mismos valores y esperado que «calcula el precio de otro viaje» en la suite original | Queda cubierta por la prueba original |
+| PRE-04, ganancia en 0 | Descartada (redundante) | Igual a «acepta la ganancia en cero» de la suite original | Se conservan los otros cinco conceptos en 0 |
+| PRE-06, falta combustible | Descartada (redundante) | Igual a «rechaza el calculo si falta el combustible» de la suite original | Se conservan los otros cinco conceptos |
+| PRE-11 | Descartada (redundante) | Igual a «acepta un total igual al maximo entero seguro» en calcular-precio.seguridad.spec.ts | Queda cubierta por esa prueba |
+| PRE-12 | Descartada (redundante) | Igual a «rechaza un total que supera el maximo entero seguro» en calcular-precio.seguridad.spec.ts | Queda cubierta por esa prueba |
+| REE-06 y REE-07 | Descartadas (redundantes) | La rama de empresa es una sola; REE-05 y REE-08 ya prueban los dos extremos de la combinación | Se conservan REE-05 y REE-08 |
+| ANT-02, ANT-04, ANT-05 | Conservadas, con aviso | El esperado sale de la decisión provisional de redondear hacia abajo, no de la regla del cliente | Marcadas en la tabla y en las ambigüedades; se confirma con la clienta (P-16) |
+| REE-03 y REE-04 | Conservadas, con aviso | El esperado sale de un supuesto y de una decisión provisional (primero se revisa la cancelación) | Marcadas en la tabla de decisión |
+| REE-14 | Conservada, con aviso | Es una regla de validación nuestra, no del cliente | Marcada como regla de validación nuestra |
 
 ## 3. Errores que introduje a propósito
 
