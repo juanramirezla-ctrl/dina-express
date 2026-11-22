@@ -104,7 +104,10 @@ Se completa en el paso 7.
 
 | # | Cambio que hice | Prueba que falló | Caso que agregué | Deshecho con git restore |
 |---|---|---|---|---|
-| 1 | (pendiente) | | | |
+| 1 | `Math.floor` por `Math.ceil` en calcularAnticipoYSaldo (calcular-pagos.ts) | ANT-02, ANT-04 y ANT-05 (3 pruebas) | Ninguno, ya la detectaban | Sí |
+| 2 | `montoPagado === 0` por `=== 1` en calcularReembolso (calcular-pagos.ts) | REE-09 y REE-02 (2 pruebas) | Ninguno, ya la detectaban | Sí |
+| 3 | `valor >= 0` por `valor > 0` en esEnteroSeguroNoNegativo (calcular-pagos.ts) | ANT-03, ANT-10 (precio 0), REE-02, REE-04 y REE-08 (5 pruebas) | Ninguno, ya la detectaban | Sí |
+| 4 | `return montoPagado` por `return 440000` en calcularReembolso (calcular-pagos.ts) | REE-09 (1 prueba; REE-01 pasó porque su esperado es justo 440000) | Ninguno, ya la detectaba | Sí |
 
 ## 4. Datos de prueba sintéticos
 
