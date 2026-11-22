@@ -81,3 +81,27 @@ No usé un agente de código en esta semana.
 - **Decisión:** Ajustada
 - **Por qué:** La regla `.env.*` también ignoraba `.env.example`, que sí debe subirse. Agregué la línea `!.env.example`.
 - **Verificación:** Al hacer el commit, Git dijo «nothing to commit». Comprobé con `git check-ignore -v .env.example` que ya no estaba ignorado y el archivo apareció en GitHub.
+
+## Entrada 12 (semana 7)
+- **Fecha:** 21 de noviembre de 2026
+- **Prompt:** Pedí a Claude las tablas de casos (particiones de equivalencia, valores límite y tabla de decisión) para calcularPrecio, calcularAnticipoYSaldo y calcularReembolso, a partir de las reglas de mi cliente.
+- **Resultado:** Tablas con 12, 10 y 14 casos, y una tabla de decisión de 3 condiciones simplificada a 4 reglas.
+- **Verificación:** Las revisé con las cinco preguntas (particiones, límites, origen del esperado, ambigüedades y reglas inventadas). Marqué los casos cuyo esperado sale de una decisión provisional (ANT-02, REE-04) o de una regla nuestra (REE-14), y dejé el redondeo del 50 % como pregunta para la clienta.
+
+## Entrada 13 (semana 7)
+- **Fecha:** 21 de noviembre de 2026
+- **Prompt:** Pedí a Claude las pruebas con `it.each`, un comentario por fila, valores esperados fijos y errores con mensaje exacto, sin tocar mi código.
+- **Resultado:** 57 pruebas nuevas en la carpeta `tests` (70 en total con las anteriores).
+- **Verificación:** Apliqué las tres preguntas a cada prueba. Descarté 8 redundantes (PRE-01, PRE-02, PRE-04 de ganancia, PRE-06 de combustible, PRE-11, PRE-12, REE-06 y REE-07) porque repetían pruebas existentes o la misma rama del código, y quedaron 62. Anoté las decisiones en la sección 2 del registro.
+
+## Entrada 14 (semana 7)
+- **Fecha:** 21 de noviembre de 2026
+- **Prompt:** Pedí a Claude datos sintéticos con contexto del Huila y casos difíciles (tildes, ñ, apóstrofo, nombre vacío, valores en cero).
+- **Resultado:** 8 viajes inventados en un fixture, con resultados esperados calculados a mano, y 22 pruebas que lo usan.
+- **Verificación:** Sumé por aparte el precio de cada viaje y comprobé que no hay personas reales y que los teléfonos son ficticios. Las 22 pruebas pasaron sin cambiar ningún esperado.
+
+## Entrada 15 (semana 7)
+- **Fecha:** 22 de noviembre de 2026
+- **Prompt:** Pedí 4 errores para introducir a propósito en mi código y ver si las pruebas los detectaban.
+- **Resultado:** Con `Math.ceil` fallaron 3 pruebas; con `=== 1` fallaron 2; con `valor > 0` fallaron 5; con `return 440000` falló 1 (REE-09).
+- **Verificación:** Ejecuté `npm test` después de cada cambio y deshice cada uno con `git restore` (el árbol quedó limpio). Las cuatro roturas las detectó alguna prueba, así que no agregué casos nuevos.

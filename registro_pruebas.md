@@ -113,5 +113,5 @@ Se completa en el paso 7.
 
 Se completa en el paso 8.
 
-- **Origen:** (pendiente)
-- **Casos difíciles incluidos:** (pendiente)
+- **Origen:** datos inventados con IA (Claude), con contexto del Huila: rutas entre Neiva, Pitalito, Garzón, La Plata, Campoalegre, Aipe, Rivera, San Agustín y Tello. Ninguna persona es real y los teléfonos (3000000001 a 3000000008) son ficticios. Los resultados esperados los calculé a mano desde las reglas y los comprobé sumando por aparte. Están en `backend/tests/fixtures/viajes-sinteticos.ts`.
+- **Casos difíciles incluidos:** tildes y ñ (Nicolás Peña, Íñigo Ñáñez Ávila, Aurora Cañón Rodríguez, Ñeque), apóstrofo (O'Neill, D'Angelo), nombre vacío, viaje con todos los valores en cero, precio impar (500001), un solo concepto con valor, ganancia en cero y empresas.
