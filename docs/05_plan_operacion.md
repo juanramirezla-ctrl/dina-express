@@ -41,7 +41,7 @@ Restaurar en una base de prueba (nunca sobre la base en uso):
 
 El respaldo contiene datos personales (nombre, teléfono, correo): se guarda **fuera del repositorio**, con acceso restringido, y se borra cuando deja de ser necesario.
 
-**Estado de la prueba:** se comprobó que `pg_dump` 18.6 está instalado. El respaldo completo y la restauración **todavía no se han probado**, porque piden la contraseña.
+**Estado de la prueba (26/11/2026):** el respaldo se ejecutó con `pg_dump` 18.6 y `pg_restore -l` listó su contenido (7 tablas y 2 vistas). La **restauración todavía no se ha probado**.
 
 ## 4. Si algo falla
 

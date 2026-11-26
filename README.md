@@ -1,48 +1,38 @@
 # Dina Express
 
-## 1. Qué es
-Sistema web para recibir y gestionar solicitudes de transporte de Dina Express. Una persona natural envía su solicitud por la página web y la coordinadora de transporte calcula el precio, revisa la disponibilidad de vehículos y conductores y registra los pagos. Arquitectura (ADR-001): aplicación Ionic y Angular, API en Node.js y base de datos PostgreSQL.
+[![CI](https://github.com/juanramirezla-ctrl/dina-express/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/juanramirezla-ctrl/dina-express/actions/workflows/ci.yml)
 
-Estado: primer incremento. Está lista la función de cálculo del precio (HU-02) con sus pruebas y su revisión de seguridad. La API con NestJS y la aplicación Ionic están en desarrollo.
+## 1. Qué es
+Sistema para recibir y gestionar solicitudes de transporte de Dina Express. Arquitectura decidida (ADR-001): aplicación Ionic y Angular, API en Node.js (NestJS) y PostgreSQL.
+
+**Estado real:** funciona la API con `POST /viajes` (HU-01) guardando en PostgreSQL. El precio, los pagos y la disponibilidad existen como funciones, sin rutas HTTP. **No hay interfaz web ni despliegue.**
 
 ## 2. Requisitos
 - Node.js 20 o superior y npm
 - Git
-- PostgreSQL 16 o superior (solo para la base de datos de la carpeta `database`)
+- PostgreSQL (probado con la versión 18)
 
 ## 3. Instalación
 ```
 git clone https://github.com/juanramirezla-ctrl/dina-express.git
 cd dina-express/backend
-npm install
+npm ci
 ```
-Variables de entorno: copia `.env.example` a `.env` y completa los valores. El archivo `.env` no se sube al repositorio.
-
-Base de datos (opcional por ahora): crea la base `dina_express` y ejecuta en orden los scripts de `database/`.
+Copia `.env.example` a `backend/.env` y completa los valores. El `.env` no se sube al repositorio. Para crear la base de datos, ver la [guía de ejecución local](docs/04_guia_ejecucion_local.md).
 
 ## 4. Ejecución
-El incremento actual es una función; se ejecuta mediante sus pruebas (sección 5).
-
-**Funcionalidad: `calcularPrecio` (HU-02).** Como coordinadora de transporte, quiero calcular el precio de un viaje a partir de sus seis conceptos, para dar un precio al cliente.
-
-```ts
-import { calcularPrecio } from './src/precio/calcular-precio';
-
-calcularPrecio({
-  vehiculo: 200000, conductor: 150000, combustible: 300000,
-  mantenimiento: 50000, gastosAdministrativos: 100000, ganancia: 80000,
-}); // 880000
+```
+cd backend
+npm run start:dev
 ```
 
-| Entrada | Salida |
+| Ruta | Respuesta |
 |---|---|
-| Los seis conceptos del ejemplo | 880000 |
-| Los mismos con `ganancia` en 0 | 800000 |
-| Sin `combustible` | Error: Falta el concepto: combustible |
-| `mantenimiento` en -50000 | Error: El concepto mantenimiento debe ser un número entero de 0 o más |
-| Sin objeto de conceptos | Error: Se necesitan los conceptos del precio |
+| `GET /salud` | 200 `{"estado":"ok"}` |
+| `GET /salud/base-datos` | 200, o 503 sin conexión |
+| `POST /viajes` | 201 «Solicitud recibida», o 400 si los datos no son válidos |
 
-Supuestos: los valores son enteros de pesos, de 0 o más; la ganancia es un valor fijo (pendiente de confirmar con la clienta).
+Cuerpo de `POST /viajes`: `nombre`, `origen`, `destino`, `fechaServicio` (AAAA-MM-DD) y al menos `telefono` o `email`.
 
 ## 5. Pruebas
 ```
@@ -50,33 +40,30 @@ cd backend
 npm test
 npm run lint
 ```
-Hay 84 pruebas: casos normales, de límite, de error y de abuso. El linter usa ESLint con `eslint-plugin-security` y queda sin avisos.
+107 pruebas pasan y el linter (ESLint con `eslint-plugin-security`) queda sin avisos. Cobertura de líneas de la lógica del negocio: 80 % (precio y pagos 100 %, viajes 98 %, **flota 0 %**), medida el 26/11/2026.
+
+El pipeline ejecuta linter, pruebas y `npm audit`; la auditoría **no bloquea**. Hay vulnerabilidades pendientes, también en producción: ver [revisión de seguridad](revision_seguridad.md).
 
 ## 6. Estructura
 ```
 dina-express/
-├── backend/
-│   ├── src/precio/
-│   │   ├── calcular-precio.ts
-│   │   ├── calcular-precio.spec.ts
-│   │   └── calcular-precio.seguridad.spec.ts
-│   ├── eslint.config.mjs
-│   ├── jest.config.js
-│   └── tsconfig.json
-├── database/             esquema y datos de prueba (PostgreSQL)
-├── bitacora_ia.md        uso de IA, entradas por semana
-├── revision_seguridad.md informe de revisión de código y seguridad
-└── .env.example
+├── .github/workflows/ci.yml   pipeline
+├── backend/src/               precio, pagos, flota, viajes, base-datos
+├── backend/tests/             casos y datos sintéticos
+├── database/                  esquema y datos de prueba
+├── docs/                      propuesta, requisitos, diseño y ADR, guía y operación
+├── bitacora_ia.md             uso de IA
+├── registro_pruebas.md        tablas de casos
+├── revision_seguridad.md      revisión de código y seguridad
+└── informe_final.md           informe final (también en PDF)
 ```
 
 ## 7. Uso de IA
-Se usó Claude como asistente para el contrato, las pruebas, la implementación, el refactor, la revisión de seguridad y los borradores de docstrings y README. Cada sugerencia se verificó con pruebas o comandos. El detalle está en `bitacora_ia.md` y en `revision_seguridad.md`.
+Se usaron asistentes de IA (Claude, Claude Code y ChatGPT) en requisitos, diseño, código, pruebas, operación y en los borradores de documentación. El detalle y la verificación están en [bitacora_ia.md](bitacora_ia.md) y en el [informe final](informe_final.md). El sistema en sí no usa IA.
 
 ## 8. Autor y licencia
 Juan José Ramírez Lasso, Fundación Escuela Tecnológica de Neiva (FET). Proyecto académico del seminario de IA aplicada al ciclo de vida del software. Licencia: uso académico, todos los derechos reservados.
 
 ## Metodología y ciclo de vida
-- **Ramas:** `main` es la versión estable. `api-nestjs` (API base) y `pruebas-semana-7` (suite de pruebas) se integran con pull request y no se borran, para conservar el historial.
-- **Ciclo por funcionalidad:** reglas del cliente, diseño de casos, pruebas, implementación, refactor, revisión de seguridad e integración.
-- **Commits pequeños,** con un mensaje que dice qué cambió.
-- **Uso de IA con revisión humana:** `bitacora_ia.md` y `registro_pruebas.md`.
+- **Ramas:** una por tarea, integradas a `main` con pull request. No se borran, para conservar el historial.
+- **Ciclo por funcionalidad:** reglas del cliente, casos, pruebas en rojo, implementación, refactor, revisión e integración. Excepción: `flota/disponibilidad.ts` quedó sin pruebas.

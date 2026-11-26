@@ -68,3 +68,13 @@ H-01 y H-02 se confirmaron antes de corregir: sus pruebas de abuso fallaron en r
 | Error de decoradores al arrancar la API base con NestJS | Quedó sin resolver; los archivos están guardados aparte (git stash) | Corregir la configuración de TypeScript en el siguiente incremento |
 
 **Claves expuestas:** Ninguna.
+
+## 5. Actualización del 26 de noviembre de 2026
+
+Las secciones anteriores describen el estado del 14/11, antes de que existieran la API y la base de datos.
+
+| Id | Problema | Severidad | Estado |
+|---|---|---|---|
+| H-07 | `npm audit` reporta 28 vulnerabilidades (3 bajas, 16 moderadas, 9 altas). **9 están en dependencias de producción** (4 moderadas, 5 altas), según `npm audit --omit=dev`; entre ellas, paquetes que usa NestJS. La frase de H-06 «solo afectan herramientas de desarrollo» ya no es válida para el proyecto | Alta | Pendiente: corregirlas requiere cambios de versión mayor. No desplegar antes de resolverlas |
+
+Otros pendientes actuales: `POST /viajes` no pide autorización de tratamiento de datos ni limita peticiones; no hay inicio de sesión ni roles (RNF-01). Las consultas ya usan parámetros.
