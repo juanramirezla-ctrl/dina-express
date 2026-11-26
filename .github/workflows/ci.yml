@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'feature/**', 'pruebas-semana-7']
+  pull_request:
+    branches: [main]
+
+jobs:
+  calidad:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Linter con reglas de seguridad
+        run: npm run lint
+      - name: Pruebas
+        run: npm test
+      - name: Auditoría de dependencias
+        run: npm audit --audit-level=high
+        continue-on-error: true
