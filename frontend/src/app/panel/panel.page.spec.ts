@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { FlotaService } from '../flota/flota.service';
+import { SolicitudService } from '../solicitud/solicitud.service';
 
 import { PanelPage } from './panel.page';
 
@@ -17,6 +18,8 @@ describe('PanelPage: panel de la coordinadora', () => {
     modelo: 'Hilux',
     estado: 'disponible',
   };
+  const solicitudes = { listar: vi.fn() };
+  const pedido = { id_viaje: 1, nombre: 'Camila Rojas', telefono: '3000000000' };
   let pagina: PanelPage;
 
   beforeEach(() => {
@@ -24,7 +27,14 @@ describe('PanelPage: panel de la coordinadora', () => {
     flota.todos.mockReturnValue(of([vehiculo]));
     flota.registrar.mockReturnValue(of({ idVehiculo: 4 }));
     flota.cambiarEstado.mockReturnValue(of({}));
-    TestBed.configureTestingModule({ providers: [provideRouter([]), { provide: FlotaService, useValue: flota }] });
+    solicitudes.listar.mockReturnValue(of([pedido]));
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        { provide: FlotaService, useValue: flota },
+        { provide: SolicitudService, useValue: solicitudes },
+      ],
+    });
     pagina = TestBed.createComponent(PanelPage).componentInstance;
     pagina.acceso.setValue({ clave: 'secreta' });
   });
@@ -35,6 +45,13 @@ describe('PanelPage: panel de la coordinadora', () => {
     expect(flota.todos).toHaveBeenCalledWith('secreta');
     expect(pagina.dentro()).toBe(true);
     expect(pagina.vehiculos()).toEqual([vehiculo]);
+  });
+
+  it('al entrar muestra las solicitudes de los clientes', () => {
+    pagina.entrar();
+
+    expect(solicitudes.listar).toHaveBeenCalledWith('secreta');
+    expect(pagina.solicitudes()).toEqual([pedido]);
   });
 
   it('no entra con una clave incorrecta', () => {
