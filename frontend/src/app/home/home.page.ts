@@ -1,6 +1,7 @@
 import type { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
   IonButton,
   IonCard,
@@ -13,10 +14,13 @@ import {
   IonInput,
   IonItem,
   IonList,
+  IonSelect,
+  IonSelectOption,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular';
 
+import { FlotaService, TIPOS, type DatosVehiculo } from '../flota/flota.service';
 import { SolicitudService } from '../solicitud/solicitud.service';
 
 const MENSAJE_CAMPOS = 'Complete nombre, origen, destino y fecha';
@@ -30,6 +34,7 @@ const MENSAJE_SIN_CONEXION = 'No se pudo enviar la solicitud. Intente de nuevo m
   styleUrls: ['home.page.scss'],
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     IonButton,
     IonCard,
     IonCardContent,
@@ -41,12 +46,20 @@ const MENSAJE_SIN_CONEXION = 'No se pudo enviar la solicitud. Intente de nuevo m
     IonInput,
     IonItem,
     IonList,
+    IonSelect,
+    IonSelectOption,
     IonTitle,
     IonToolbar,
   ],
 })
 export class HomePage {
   private readonly solicitudes = inject(SolicitudService);
+
+  private readonly flota = inject(FlotaService);
+
+  readonly tipos = TIPOS;
+  readonly disponibles = signal<DatosVehiculo[]>([]);
+  readonly avisoFlota = signal('');
 
   readonly formulario = inject(FormBuilder).nonNullable.group({
     nombre: ['', Validators.required],
@@ -71,6 +84,19 @@ export class HomePage {
     { nombre: 'Volquetas', detalle: 'Residuos industriales o cargas secas.' },
     { nombre: 'Carga pesada', detalle: 'Tractomulas, camas altas y camas bajas.' },
   ];
+
+  /** Muestra al cliente los vehículos disponibles del tipo elegido. */
+  consultar(tipo: string): void {
+    this.disponibles.set([]);
+    this.avisoFlota.set('');
+    this.flota.disponibles(tipo).subscribe({
+      next: (vehiculos) => {
+        this.disponibles.set(vehiculos);
+        this.avisoFlota.set(vehiculos.length === 0 ? 'No hay vehículos disponibles de este tipo' : '');
+      },
+      error: () => this.avisoFlota.set('No se pudo consultar la disponibilidad'),
+    });
+  }
 
   /** Envía la solicitud si el formulario está completo y hay autorización. */
   enviar(): void {

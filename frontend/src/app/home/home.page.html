@@ -13,6 +13,30 @@
   <main>
     <ion-card>
       <ion-card-header>
+        <ion-card-title>Consulte la disponibilidad</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-select
+          label="Tipo de vehículo"
+          labelPlacement="stacked"
+          interface="popover"
+          (ionChange)="consultar($event.detail.value)"
+        >
+          @for (tipo of tipos; track tipo.valor) {
+            <ion-select-option [value]="tipo.valor">{{ tipo.nombre }}</ion-select-option>
+          }
+        </ion-select>
+        @if (avisoFlota()) {
+          <p class="error" role="status">{{ avisoFlota() }}</p>
+        }
+        @for (vehiculo of disponibles(); track vehiculo.placa) {
+          <p class="exito">Disponible: {{ vehiculo.marca }} {{ vehiculo.modelo }} · placa {{ vehiculo.placa }}</p>
+        }
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
         <ion-card-title>Solicite su viaje</ion-card-title>
       </ion-card-header>
       <ion-card-content>
@@ -69,6 +93,9 @@
       </ion-card>
     }
 
-    <footer>Sedes: Aipe (principal), Villavieja y Maní.</footer>
+    <footer>
+      <p>Sedes: Aipe (principal), Villavieja y Maní.</p>
+      <a routerLink="/panel">Acceso de coordinación</a>
+    </footer>
   </main>
 </ion-content>
