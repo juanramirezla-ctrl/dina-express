@@ -16,7 +16,6 @@ import {
   IonList,
   IonSelect,
   IonSelectOption,
-  IonTitle,
   IonToolbar,
 } from '@ionic/angular';
 
@@ -49,7 +48,6 @@ const MENSAJE_SIN_CONEXION = 'No se pudo enviar la solicitud. Intente de nuevo m
     IonList,
     IonSelect,
     IonSelectOption,
-    IonTitle,
     IonToolbar,
   ],
 })
@@ -77,6 +75,13 @@ export class HomePage {
   readonly exito = signal('');
   readonly error = signal('');
   readonly enviando = signal(false);
+
+  readonly ventajas = [
+    { titulo: 'Variedad de vehículos', detalle: 'Para sus servicios' },
+    { titulo: 'Certificaciones', detalle: 'Estamos certificados' },
+    { titulo: 'Accesibilidad', detalle: 'A nuestros servicios' },
+    { titulo: 'Seguridad', detalle: 'En sus viajes' },
+  ];
 
   /** Información pública tomada de dinaexpress.com.co, con autorización de la empresa. */
   readonly servicios = [

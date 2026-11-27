@@ -1,112 +1,148 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Dina Express S.A.S.</ion-title>
+<ion-header class="barra">
+  <ion-toolbar>
+    <div class="barra-contenido">
+      <img src="assets/empresa/logo.png" alt="Dina Express S.A.S." />
+      <nav>
+        <button type="button" (click)="seccionServicios.scrollIntoView({ behavior: 'smooth' })">Servicios</button>
+        <button type="button" (click)="seccionReserva.scrollIntoView({ behavior: 'smooth' })">Reservar</button>
+        <a routerLink="/panel">Coordinación</a>
+      </nav>
+    </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <section class="portada">
-    <h1>Somos la mejor opción de transporte de pasajeros y de carga</h1>
-    <p>Empresa de transporte huilense, con más de 10 años de experiencia.</p>
+    <div class="ancho">
+      <h1>Somos la mejor opción de transporte de pasajeros y de carga</h1>
+      <p>Empresa de transporte huilense, con más de 10 años de experiencia.</p>
+      <ion-button (click)="seccionReserva.scrollIntoView({ behavior: 'smooth' })">Solicitar viaje</ion-button>
+    </div>
   </section>
 
-  <main>
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Consulte la disponibilidad</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-select
-          label="Tipo de vehículo"
-          labelPlacement="stacked"
-          interface="popover"
-          (ionChange)="consultar($event.detail.value)"
-        >
-          @for (tipo of tipos; track tipo.valor) {
-            <ion-select-option [value]="tipo.valor">{{ tipo.nombre }}</ion-select-option>
-          }
-        </ion-select>
-        @if (avisoFlota()) {
-          <p class="error" role="status">{{ avisoFlota() }}</p>
-        }
-        @for (vehiculo of disponibles(); track vehiculo.placa) {
-          <ion-button
-            expand="block"
-            [fill]="elegido()?.id_vehiculo === vehiculo.id_vehiculo ? 'solid' : 'outline'"
-            (click)="elegir(vehiculo)"
-          >
-            {{ vehiculo.marca }} {{ vehiculo.modelo }} · {{ vehiculo.placa }}
-          </ion-button>
-        }
-      </ion-card-content>
-    </ion-card>
+  <section class="franja">
+    <div class="ancho rejilla cuatro">
+      @for (ventaja of ventajas; track ventaja.titulo) {
+        <div class="ventaja">
+          <strong>{{ ventaja.titulo }}</strong>
+          <span>{{ ventaja.detalle }}</span>
+        </div>
+      }
+    </div>
+  </section>
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Solicite su viaje</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        @if (elegido(); as vehiculo) {
-          <p class="exito">Vehículo elegido: {{ vehiculo.marca }} {{ vehiculo.modelo }} · {{ vehiculo.placa }}</p>
-        } @else {
-          <p>Primero elija un vehículo en «Consulte la disponibilidad».</p>
-        }
-        <form [formGroup]="formulario" (ngSubmit)="enviar()">
-          <ion-list>
-            <ion-item>
-              <ion-input label="Nombre" labelPlacement="stacked" formControlName="nombre" maxlength="120"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Teléfono" labelPlacement="stacked" type="tel" formControlName="telefono"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Correo" labelPlacement="stacked" type="email" formControlName="email"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Origen" labelPlacement="stacked" formControlName="origen" maxlength="120"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Destino" labelPlacement="stacked" formControlName="destino" maxlength="120"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Fecha del servicio" labelPlacement="stacked" type="date" formControlName="fechaServicio">
-              </ion-input>
-            </ion-item>
-          </ion-list>
-
-          <p class="aviso">
-            Sus datos de contacto se usan únicamente para responder esta solicitud (Ley 1581 de 2012). Proyecto
-            académico: use datos de prueba.
-          </p>
-          <ion-checkbox labelPlacement="end" formControlName="autorizacion">
-            Autorizo el tratamiento de mis datos
-          </ion-checkbox>
-
-          @if (error()) {
-            <p class="error" role="alert">{{ error() }}</p>
-          }
-          @if (exito()) {
-            <p class="exito" role="status">{{ exito() }}</p>
-          }
-
-          <ion-button type="submit" expand="block" [disabled]="enviando()">Enviar solicitud</ion-button>
-        </form>
-      </ion-card-content>
-    </ion-card>
-
-    <h2>Nuestros servicios</h2>
-    @for (servicio of servicios; track servicio.nombre) {
+  <section class="reserva" #seccionReserva>
+    <h2>Reserve su viaje</h2>
+    <div class="ancho rejilla dos">
       <ion-card>
+        <ion-card-header>
+          <ion-card-title>1. Elija su vehículo</ion-card-title>
+        </ion-card-header>
         <ion-card-content>
-          <strong>{{ servicio.nombre }}</strong>
-          <p>{{ servicio.detalle }}</p>
+          <ion-select
+            label="Tipo de vehículo"
+            labelPlacement="stacked"
+            fill="outline"
+            interface="popover"
+            (ionChange)="consultar($event.detail.value)"
+          >
+            @for (tipo of tipos; track tipo.valor) {
+              <ion-select-option [value]="tipo.valor">{{ tipo.nombre }}</ion-select-option>
+            }
+          </ion-select>
+          @if (avisoFlota()) {
+            <p class="error" role="status">{{ avisoFlota() }}</p>
+          }
+          @for (vehiculo of disponibles(); track vehiculo.placa) {
+            <ion-button
+              expand="block"
+              [fill]="elegido()?.id_vehiculo === vehiculo.id_vehiculo ? 'solid' : 'outline'"
+              (click)="elegir(vehiculo)"
+            >
+              {{ vehiculo.marca }} {{ vehiculo.modelo }} · {{ vehiculo.placa }}
+            </ion-button>
+          }
         </ion-card-content>
       </ion-card>
-    }
 
-    <footer>
-      <p>Sedes: Aipe (principal), Villavieja y Maní.</p>
-      <a routerLink="/panel">Acceso de coordinación</a>
-    </footer>
-  </main>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>2. Solicite su viaje</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          @if (elegido(); as vehiculo) {
+            <p class="exito">Vehículo elegido: {{ vehiculo.marca }} {{ vehiculo.modelo }} · {{ vehiculo.placa }}</p>
+          } @else {
+            <p>Primero elija un vehículo.</p>
+          }
+          <form [formGroup]="formulario" (ngSubmit)="enviar()">
+            <ion-list>
+              <ion-item>
+                <ion-input label="Nombre" labelPlacement="stacked" formControlName="nombre" maxlength="120"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input label="Teléfono" labelPlacement="stacked" type="tel" formControlName="telefono"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input label="Correo" labelPlacement="stacked" type="email" formControlName="email"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input label="Origen" labelPlacement="stacked" formControlName="origen" maxlength="120"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input label="Destino" labelPlacement="stacked" formControlName="destino" maxlength="120">
+                </ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input
+                  label="Fecha del servicio"
+                  labelPlacement="stacked"
+                  type="date"
+                  formControlName="fechaServicio"
+                >
+                </ion-input>
+              </ion-item>
+            </ion-list>
+
+            <p class="aviso">
+              Sus datos de contacto se usan únicamente para responder esta solicitud (Ley 1581 de 2012). Proyecto
+              académico: use datos de prueba.
+            </p>
+            <ion-checkbox labelPlacement="end" formControlName="autorizacion">
+              Autorizo el tratamiento de mis datos
+            </ion-checkbox>
+
+            @if (error()) {
+              <p class="error" role="alert">{{ error() }}</p>
+            }
+            @if (exito()) {
+              <p class="exito" role="status">{{ exito() }}</p>
+            }
+
+            <ion-button type="submit" expand="block" [disabled]="enviando()">Enviar solicitud</ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </section>
+
+  <section class="servicios" #seccionServicios>
+    <h2>Nuestros servicios</h2>
+    <div class="ancho rejilla tres">
+      @for (servicio of servicios; track servicio.nombre) {
+        <article>
+          <h3>{{ servicio.nombre }}</h3>
+          <p>{{ servicio.detalle }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="lema">Transportamos con el corazón</section>
+
+  <footer>
+    <img src="assets/empresa/logo.png" alt="" />
+    <p>Sedes: Aipe (principal), Villavieja y Maní.</p>
+    <a routerLink="/panel">Acceso de coordinación</a>
+  </footer>
 </ion-content>
