@@ -19,10 +19,28 @@ export interface Respuesta {
   idViaje: number;
 }
 
+/** Una solicitud como la ve la coordinadora. */
+export interface SolicitudRecibida {
+  id_viaje: number;
+  nombre: string;
+  telefono: string | null;
+  email: string | null;
+  origen: string;
+  destino: string;
+  fecha_servicio: string;
+  estado: string;
+}
+
 /** Comunicación con la API para las solicitudes de viaje (HU-01). */
 @Injectable({ providedIn: 'root' })
 export class SolicitudService {
   private readonly http = inject(HttpClient);
+
+  listar(clave: string): Observable<SolicitudRecibida[]> {
+    return this.http.get<SolicitudRecibida[]>(`${environment.apiUrl}/viajes`, {
+      headers: { 'x-clave-coordinadora': clave },
+    });
+  }
 
   enviar(solicitud: Solicitud): Observable<Respuesta> {
     return this.http.post<Respuesta>(`${environment.apiUrl}/viajes`, solicitud);

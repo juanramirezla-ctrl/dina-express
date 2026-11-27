@@ -27,6 +27,35 @@
         </ion-card-content>
       </ion-card>
     } @else {
+      <h2>Solicitudes</h2>
+      <ion-button size="small" fill="outline" (click)="cargarSolicitudes()">Actualizar</ion-button>
+      @for (solicitud of solicitudes(); track solicitud.id_viaje) {
+        <ion-card>
+          <ion-card-content>
+            <strong>{{ solicitud.nombre }}</strong>
+            <p>{{ solicitud.origen }} → {{ solicitud.destino }} · {{ solicitud.fecha_servicio }}</p>
+            <p>Estado: {{ solicitud.estado }}</p>
+            @if (solicitud.telefono) {
+              <ion-button size="small" [href]="'tel:' + solicitud.telefono">Llamar {{ solicitud.telefono }}</ion-button>
+              <ion-button
+                size="small"
+                fill="outline"
+                target="_blank"
+                rel="noopener noreferrer"
+                [href]="'https://wa.me/57' + solicitud.telefono"
+              >
+                WhatsApp
+              </ion-button>
+            }
+            @if (solicitud.email) {
+              <ion-button size="small" fill="outline" [href]="'mailto:' + solicitud.email">{{ solicitud.email }}</ion-button>
+            }
+          </ion-card-content>
+        </ion-card>
+      } @empty {
+        <p>No hay solicitudes.</p>
+      }
+
       <ion-card>
         <ion-card-header>
           <ion-card-title>Registrar vehículo</ion-card-title>

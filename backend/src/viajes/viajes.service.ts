@@ -14,10 +14,37 @@ const SQL_CREAR_VIAJE = `
   RETURNING id_viaje
 `;
 
+const SQL_LISTAR = `
+  SELECT v.id_viaje, c.nombre, c.telefono, c.email, v.origen, v.destino,
+         to_char(v.fecha_hora, 'YYYY-MM-DD') AS fecha_servicio, v.estado
+  FROM viaje v
+  JOIN cliente c ON c.id_cliente = v.id_cliente
+  ORDER BY v.creado_en DESC
+  LIMIT 50
+`;
+
+/** Una solicitud como la ve la coordinadora. */
+export interface SolicitudRecibida {
+  id_viaje: number;
+  nombre: string;
+  telefono: string | null;
+  email: string | null;
+  origen: string;
+  destino: string;
+  fecha_servicio: string;
+  estado: string;
+}
+
 /** Reglas y acceso a datos de las solicitudes de viaje. */
 @Injectable()
 export class ViajesService {
   constructor(private readonly baseDatos: BaseDatosService) {}
+
+  /** @returns Las últimas 50 solicitudes, la más reciente primero. */
+  async listar(): Promise<SolicitudRecibida[]> {
+    const { rows } = await this.baseDatos.consultar<SolicitudRecibida>(SQL_LISTAR);
+    return rows;
+  }
 
   /**
    * Guarda la solicitud de viaje de una persona natural (HU-01).

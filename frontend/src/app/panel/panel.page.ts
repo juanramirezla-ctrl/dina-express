@@ -21,6 +21,7 @@ import {
 } from '@ionic/angular';
 
 import { FlotaService, TIPOS, type Vehiculo } from '../flota/flota.service';
+import { SolicitudService, type SolicitudRecibida } from '../solicitud/solicitud.service';
 
 const MENSAJE_CAMPOS = 'Complete placa, tipo, marca y modelo';
 const MENSAJE_SIN_CONEXION = 'No se pudo conectar con la API';
@@ -52,6 +53,7 @@ const MENSAJE_SIN_CONEXION = 'No se pudo conectar con la API';
 })
 export class PanelPage {
   private readonly flota = inject(FlotaService);
+  private readonly pedidos = inject(SolicitudService);
   private readonly fb = inject(FormBuilder).nonNullable;
 
   /** La clave solo vive en memoria: al recargar la página hay que escribirla otra vez. */
@@ -61,6 +63,7 @@ export class PanelPage {
   readonly tipos = TIPOS;
   readonly dentro = signal(false);
   readonly vehiculos = signal<Vehiculo[]>([]);
+  readonly solicitudes = signal<SolicitudRecibida[]>([]);
   readonly error = signal('');
   readonly exito = signal('');
 
@@ -68,6 +71,15 @@ export class PanelPage {
   entrar(): void {
     this.limpiar();
     this.cargar();
+    this.cargarSolicitudes();
+  }
+
+  /** Trae las solicitudes de los clientes, la más reciente primero. */
+  cargarSolicitudes(): void {
+    this.pedidos.listar(this.clave()).subscribe({
+      next: (solicitudes) => this.solicitudes.set(solicitudes),
+      error: (fallo: HttpErrorResponse) => this.fallar(fallo),
+    });
   }
 
   registrar(): void {
