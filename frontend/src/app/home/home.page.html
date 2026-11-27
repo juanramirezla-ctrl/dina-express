@@ -1,21 +1,74 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title> Blank </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Dina Express S.A.S.</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <section class="portada">
+    <h1>Somos la mejor opción de transporte de pasajeros y de carga</h1>
+    <p>Empresa de transporte huilense, con más de 10 años de experiencia.</p>
+  </section>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>
-      Start with Ionic
-      <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a>
-    </p>
-  </div>
+  <main>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Solicite su viaje</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form [formGroup]="formulario" (ngSubmit)="enviar()">
+          <ion-list>
+            <ion-item>
+              <ion-input label="Nombre" labelPlacement="stacked" formControlName="nombre" maxlength="120"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Teléfono" labelPlacement="stacked" type="tel" formControlName="telefono"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Correo" labelPlacement="stacked" type="email" formControlName="email"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Origen" labelPlacement="stacked" formControlName="origen" maxlength="120"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Destino" labelPlacement="stacked" formControlName="destino" maxlength="120"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Fecha del servicio" labelPlacement="stacked" type="date" formControlName="fechaServicio">
+              </ion-input>
+            </ion-item>
+          </ion-list>
+
+          <p class="aviso">
+            Sus datos de contacto se usan únicamente para responder esta solicitud (Ley 1581 de 2012). Proyecto
+            académico: use datos de prueba.
+          </p>
+          <ion-checkbox labelPlacement="end" formControlName="autorizacion">
+            Autorizo el tratamiento de mis datos
+          </ion-checkbox>
+
+          @if (error()) {
+            <p class="error" role="alert">{{ error() }}</p>
+          }
+          @if (exito()) {
+            <p class="exito" role="status">{{ exito() }}</p>
+          }
+
+          <ion-button type="submit" expand="block" [disabled]="enviando()">Enviar solicitud</ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <h2>Nuestros servicios</h2>
+    @for (servicio of servicios; track servicio.nombre) {
+      <ion-card>
+        <ion-card-content>
+          <strong>{{ servicio.nombre }}</strong>
+          <p>{{ servicio.detalle }}</p>
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <footer>Sedes: Aipe (principal), Villavieja y Maní.</footer>
+  </main>
 </ion-content>
