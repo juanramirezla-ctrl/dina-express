@@ -105,3 +105,33 @@ No usé un agente de código en esta semana.
 - **Prompt:** Pedí 4 errores para introducir a propósito en mi código y ver si las pruebas los detectaban.
 - **Resultado:** Con `Math.ceil` fallaron 3 pruebas; con `=== 1` fallaron 2; con `valor > 0` fallaron 5; con `return 440000` falló 1 (REE-09).
 - **Verificación:** Ejecuté `npm test` después de cada cambio y deshice cada uno con `git restore` (el árbol quedó limpio). Las cuatro roturas las detectó alguna prueba, así que no agregué casos nuevos.
+
+## Entrada 16 (conexión a PostgreSQL)
+- **Fecha:** 24 de noviembre de 2026
+- **Prompt (resumido; no guardé el texto exacto):** Pedí a Claude conectar la API a PostgreSQL con consultas parametrizadas, escribiendo primero la prueba.
+- **Resultado:** `BaseDatosService` con `pg` y la ruta `GET /salud/base-datos`. Commits af7eb8b (prueba en rojo) y 19f3fc1 (implementación).
+- **Verificación:** Ejecuté las pruebas en mi equipo. El 26/11 la ruta respondió 200.
+
+## Entrada 17 (HU-01, solicitud de viaje)
+- **Fecha:** 24 y 25 de noviembre de 2026
+- **Prompt (resumido; no guardé el texto exacto):** Pedí a Claude implementar HU-01 con pruebas primero: validar la solicitud y guardarla con una consulta parametrizada.
+- **Resultado:** Ruta `POST /viajes`. Commits 3e64e53 (pruebas en rojo) y f1ca0b0 (implementación). Claude solo había probado el código con sustitutos, no con Jest real.
+- **Verificación:** Ejecuté las pruebas en mi equipo. `POST /viajes` respondió 201 «Solicitud recibida» y vi las filas en pgAdmin. El 26/11 el caso sin teléfono ni correo respondió 400.
+
+## Entrada 18 (pipeline de CI)
+- **Fecha:** 25 de noviembre de 2026
+- **Prompt (resumido; no guardé el texto exacto):** Pedí a Claude un flujo de GitHub Actions con linter, pruebas y auditoría de dependencias.
+- **Resultado:** `.github/workflows/ci.yml` (commit 119be29). La auditoría no bloquea (`continue-on-error: true`).
+- **Verificación:** Tres ejecuciones en verde en Actions; la #3 en `main`.
+
+## Entrada 19 (cierre: documentos y operación)
+- **Fecha:** 26 de noviembre de 2026
+- **Prompt (resumido):** Pedí a Claude Code inspeccionar el repositorio sin modificarlo, preparar en `docs/` los documentos de los módulos sin datos personales y redactar la guía de ejecución y el plan de operación.
+- **Resultado:** Cinco documentos en `docs/` (commits 9117d18 y 33ae338, PR #6). La persona entrevistada autorizó usar sus respuestas con IA.
+- **Verificación:** Aprobé los tres primeros antes del commit; la guía y el plan los integré con el PR #6. Claude Code arrancó la API (rutas de salud 200, solicitud sin contacto 400) y ejecutó `npm test` y `npm run lint`. Yo hice el respaldo con `pg_dump`.
+
+## Entrada 20 (cierre: auditoría, README, informe y diapositivas)
+- **Fecha:** 26 de noviembre de 2026
+- **Prompt (resumido):** Pedí a Claude Code actualizar la bitácora y el README, y redactar el informe final, las diapositivas y el guion a partir de la evidencia del repositorio.
+- **Decisión:** Ajustada. El resumen de continuidad hecho con IA daba por vigente que `npm audit` mostraba 14 vulnerabilidades solo de desarrollo; al ejecutarlo de nuevo aparecieron 28, 9 de ellas en producción.
+- **Verificación:** `npm audit` y `npm audit --omit=dev`; cobertura medida con Jest; commits comprobados con `git show`.
