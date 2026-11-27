@@ -135,3 +135,34 @@ No usé un agente de código en esta semana.
 - **Prompt (resumido):** Pedí a Claude Code actualizar la bitácora y el README, y redactar el informe final, las diapositivas y el guion a partir de la evidencia del repositorio.
 - **Decisión:** Ajustada. El resumen de continuidad hecho con IA daba por vigente que `npm audit` mostraba 14 vulnerabilidades solo de desarrollo; al ejecutarlo de nuevo aparecieron 28, 9 de ellas en producción.
 - **Verificación:** `npm audit` y `npm audit --omit=dev`; cobertura medida con Jest; commits comprobados con `git show`.
+
+## Entrada 21 (formulario web)
+- **Fecha:** 26 de noviembre de 2026
+- **Prompt (resumido):** Pedí a Claude Code hacer funcional la web con información de dinaexpress.com.co, que la empresa me autorizó usar.
+- **Resultado:** Proyecto Ionic y Angular con el formulario de HU-01 y autorización de datos. Commits 80a9d7a, 22ae951 (rojo), bc3db29 y 047df33 (CI).
+- **Verificación:** Pruebas en rojo y luego en verde; Claude Code envió el formulario en un navegador sin interfaz (sin contacto, sin autorizar y completo).
+
+## Entrada 22 (panel de flota)
+- **Fecha:** 26 de noviembre de 2026
+- **Prompt (resumido):** Pedí un panel para que la coordinadora registre vehículos y que el cliente vea los disponibles por tipo.
+- **Resultado:** Commits 4718509 (pruebas que faltaban en flota), d8d8472 (rojo), 635ec02, 030b89f (rojo) y 40c435e.
+- **Verificación:** Mi clave correcta era rechazada: respondía una API anterior que Claude Code había dejado encendida y que no había leído mi `.env`. La cerré, arranqué la mía y entré. Vi las opciones de vehículos como cliente.
+
+## Entrada 23 (solicitudes y reserva)
+- **Fecha:** 26 de noviembre de 2026
+- **Prompt (resumido):** Pedí ver las solicitudes en el panel y que al pedir un vehículo deje de aparecer a otros hasta que la coordinadora elimine la solicitud.
+- **Decisión:** Ajustada. «Eliminar» marca la solicitud como cancelada para conservar el historial.
+- **Resultado:** Commits f0d500a (rojo), 2a7b222, cf7f3ad (rojo) y 5164047.
+- **Verificación:** Claude Code probó contra PostgreSQL con datos ficticios: 201, 409 al repetir el vehículo, 401 sin clave y el vehículo libre tras cancelar.
+
+## Entrada 24 (diseño visual)
+- **Fecha:** 26 de noviembre de 2026
+- **Prompt (resumido):** Pedí que la web se pareciera a la página de la empresa.
+- **Resultado:** Colores, logo, una foto y textos de la empresa (commit 165b8b2). No se usaron logos de empresas clientes.
+- **Verificación:** Capturas en tamaño de computador y celular; pruebas y linter. Revisé la página con `ionic serve`; noté que en el puerto 8101 no consultaba, porque la API solo acepta el 8100.
+
+## Entrada 25 (documentos finales)
+- **Fecha:** 26 de noviembre de 2026
+- **Prompt (resumido):** Pedí actualizar README, guía, operación, seguridad, informe y diapositivas con el estado real.
+- **Verificación:** Cifras medidas de nuevo (143 y 23 pruebas, cobertura 91 %, `npm audit`) y pipeline #13 en verde.
+

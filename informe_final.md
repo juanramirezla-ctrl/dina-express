@@ -7,7 +7,7 @@
 
 ## 1. Resumen
 
-Dina Express transporta sobre todo para empresas del sector petrolero; sus vehículos quedan parados y no capta viajes ocasionales de personas naturales. Construí el primer incremento: una API en NestJS con PostgreSQL que recibe solicitudes de viaje, y funciones de precio, anticipo, reembolso y disponibilidad. Usé IA en las seis fases. Verifiqué con pruebas, linter, revisión contra las citas de la clienta y auditoría de dependencias. Resultado: 107 pruebas pasan y el pipeline está en verde, pero encontré errores de la IA en validación, pruebas, diseño y en un dato de seguridad desactualizado. No hay interfaz web ni despliegue.
+Dina Express transporta sobre todo para empresas del sector petrolero; sus vehículos quedan parados y no capta viajes ocasionales de personas naturales. Construí un primer incremento en Ionic, NestJS y PostgreSQL: el cliente ve los vehículos libres, elige uno y envía su solicitud; la coordinadora ve las solicitudes y administra la flota. Usé IA en las seis fases y verifiqué con pruebas, linter, citas de la clienta, pruebas contra la base real y auditoría. Resultado: 143 pruebas de la API y 23 de la web pasan y el pipeline está en verde, pero encontré errores de la IA en validación, pruebas, diseño y operación. No hay despliegue.
 
 ## 2. Problema y usuario
 
@@ -28,7 +28,7 @@ La persona entrevistada autorizó grabar la llamada y, según confirmé, usar su
 | 1. Fundamentos | Prototipar una página y explorar el problema con diez prompts | Asistente de IA | [propuesta](https://github.com/juanramirezla-ctrl/dina-express/blob/main/docs/01_propuesta.md) | Comparé cada respuesta con lo pedido: usó HTML, CSS y JavaScript y no Ionic y Angular, y al principio no era de la empresa |
 | 2. Requisitos | Necesidades, historias, Gherkin, RNF, MoSCoW y trazabilidad | Claude | [requisitos](https://github.com/juanramirezla-ctrl/dina-express/blob/main/docs/02_requisitos.md) | Cada necesidad debía tener una frase de la clienta; lo demás pasó a preguntas pendientes |
 | 3. Diseño | Alternativas, diagramas C4, modelo de datos y API | Claude y ChatGPT | [diseño y ADR](https://github.com/juanramirezla-ctrl/dina-express/blob/main/docs/03_diseno_y_adr.md), [esquema](https://github.com/juanramirezla-ctrl/dina-express/blob/main/database/01_esquema.sql) | Matriz ponderada, revisión de cardinalidades y de rutas REST |
-| 4. Código | `calcularPrecio`, conexión a PostgreSQL, HU-01 y revisión de seguridad | Claude | [bitácora](https://github.com/juanramirezla-ctrl/dina-express/blob/main/bitacora_ia.md) (entradas 1 a 11, 16 y 17), [revisión](https://github.com/juanramirezla-ctrl/dina-express/blob/main/revision_seguridad.md), commit [f1ca0b0](https://github.com/juanramirezla-ctrl/dina-express/commit/f1ca0b0) | Pruebas en rojo antes del código, ESLint con reglas de seguridad |
+| 4. Código | `calcularPrecio`, API, web, panel, reserva, diseño visual y revisión de seguridad | Claude | [bitácora](https://github.com/juanramirezla-ctrl/dina-express/blob/main/bitacora_ia.md) (entradas 1 a 11, 16 y 17), [revisión](https://github.com/juanramirezla-ctrl/dina-express/blob/main/revision_seguridad.md), commits [f1ca0b0](https://github.com/juanramirezla-ctrl/dina-express/commit/f1ca0b0), [5164047](https://github.com/juanramirezla-ctrl/dina-express/commit/5164047) y [165b8b2](https://github.com/juanramirezla-ctrl/dina-express/commit/165b8b2), entradas 21 a 24 | Pruebas en rojo antes del código, ESLint, pruebas contra PostgreSQL y revisión en el navegador |
 | 5. Pruebas | Tablas de casos, pruebas parametrizadas y datos sintéticos | Claude | [registro de pruebas](https://github.com/juanramirezla-ctrl/dina-express/blob/main/registro_pruebas.md), commits [affc6c1](https://github.com/juanramirezla-ctrl/dina-express/commit/affc6c1) y [0a87bd5](https://github.com/juanramirezla-ctrl/dina-express/commit/0a87bd5), entradas 12 a 15 | Descarté redundantes, calculé a mano los esperados y rompí el código cuatro veces |
 | 6. Operación | Pipeline, guía de ejecución y plan de operación | Claude y Claude Code | [ci.yml](https://github.com/juanramirezla-ctrl/dina-express/blob/main/.github/workflows/ci.yml), [ejecución #3](https://github.com/juanramirezla-ctrl/dina-express/actions/runs/45732714722), [guía](https://github.com/juanramirezla-ctrl/dina-express/blob/main/docs/04_guia_ejecucion_local.md), [plan](https://github.com/juanramirezla-ctrl/dina-express/blob/main/docs/05_plan_operacion.md), entradas 18 a 20 | Ejecuciones en verde, rutas probadas con `curl`, respaldo con `pg_dump` |
 
@@ -68,9 +68,11 @@ La guía y el plan de operación se escribieron al cierre, con ayuda de IA.
 - **Cómo lo detecté:** antes de cerrar pedí a Claude Code inspeccionar el repositorio sin modificarlo; al ejecutar de nuevo `npm audit` y `npm audit --omit=dev`, las cifras no coincidieron con lo documentado.
 - **Qué hice:** registré H-07 y corregí la afirmación ([revisión, sección 5](https://github.com/juanramirezla-ctrl/dina-express/blob/main/revision_seguridad.md)). **No corregí las vulnerabilidades:** requieren cambios de versión mayor que no podía probar bien antes de la entrega.
 
-### Otros hallazgos menores
+### Otros hallazgos
 
 - La regla `.env.*` sugerida para `.gitignore` también ignoraba `.env.example`. Lo noté porque Git dijo «nothing to commit» (commit [2d3939f](https://github.com/juanramirezla-ctrl/dina-express/commit/2d3939f)).
+- La IA integró `flota/disponibilidad.ts` sin pruebas, contra la metodología. La medición de cobertura mostró 0 %; las pruebas se agregaron después (commit [4718509](https://github.com/juanramirezla-ctrl/dina-express/commit/4718509)).
+- Claude Code dejó encendida una copia antigua de la API. Mi clave correcta era rechazada; al comparar la hora de arranque del proceso con la de guardado del `.env` se vio que no la había leído. Se cerró el proceso (bitácora, entrada 22).
 - En requisitos, las cifras de rendimiento y disponibilidad (5 segundos, 99 %) no las dijo la clienta; quedaron marcadas como propuestas y como preguntas P-07 y P-08.
 
 ## 5. Estado final del sistema
@@ -79,59 +81,60 @@ La guía y el plan de operación se escribieron al cierre, con ayuda de IA.
 
 ADR-001: monolito con frontend Ionic y Angular, backend Node.js y PostgreSQL en la nube. La matriz dio 82 puntos al monolito y 81 a microservicios, una diferencia mínima; pesaron la menor complejidad de despliegue y el costo ([diseño y ADR](https://github.com/juanramirezla-ctrl/dina-express/blob/main/docs/03_diseno_y_adr.md)).
 
-Lo construido es la parte de servidor: API en NestJS, consultas parametrizadas con `pg` y PostgreSQL local. Frente al diseño: no hay frontend, nube, chatbot, WhatsApp, mapas ni usuario conductor, y `POST /viajes` recibe los datos del solicitante, no un `id_cliente`.
+Lo construido: web en Ionic y Angular, API en NestJS con consultas parametrizadas y PostgreSQL, todo en un computador local. Frente al diseño: no hay nube, chatbot, WhatsApp automático, mapas ni usuario conductor; `POST /viajes` recibe los datos del solicitante y el vehículo elegido. La web ofrece al cliente consultar y reservar un vehículo, y a la coordinadora un panel protegido por clave.
 
-### Historias Must
+### Historias Must y relacionadas
 
 | Historia | Estado real | Evidencia |
 |---|---|---|
-| HU-01 Solicitar un viaje | Terminada en la API, sin formulario web | [viajes/](https://github.com/juanramirezla-ctrl/dina-express/tree/main/backend/src/viajes) |
-| HU-02 Calcular precio | Función probada, sin ruta HTTP | [precio/](https://github.com/juanramirezla-ctrl/dina-express/tree/main/backend/src/precio) |
-| HU-03 Disponibilidad de vehículos | Parcial: función que lista disponibles, **sin pruebas** ni ruta | [disponibilidad.ts](https://github.com/juanramirezla-ctrl/dina-express/blob/main/backend/src/flota/disponibilidad.ts) |
-| HU-04 Disponibilidad de conductores | Parcial: función que evalúa la asignación, **sin pruebas** ni ruta | mismo archivo |
+| HU-01 Solicitar un viaje | **Terminada**: web y API | [viajes/](https://github.com/juanramirezla-ctrl/dina-express/tree/main/backend/src/viajes), [web](https://github.com/juanramirezla-ctrl/dina-express/tree/main/frontend/src/app/home) |
+| HU-02 Calcular precio | Función probada, sin ruta ni pantalla | [precio/](https://github.com/juanramirezla-ctrl/dina-express/tree/main/backend/src/precio) |
+| HU-03 Disponibilidad de vehículos | **Terminada**: registrar, marcar y rechazar placa repetida | [flota/](https://github.com/juanramirezla-ctrl/dina-express/tree/main/backend/src/flota), [panel](https://github.com/juanramirezla-ctrl/dina-express/tree/main/frontend/src/app/panel) |
+| HU-04 Disponibilidad de conductores | Parcial: función probada, sin pantalla | [disponibilidad.ts](https://github.com/juanramirezla-ctrl/dina-express/blob/main/backend/src/flota/disponibilidad.ts) |
+| HU-05 Orden de la lista (Should) | Parcial: el último liberado va primero; falta el escenario «sin servicio en curso» | [flota/](https://github.com/juanramirezla-ctrl/dina-express/tree/main/backend/src/flota) |
 | HU-06 Anticipo del 50 % | Parcial: cálculo probado; no registra cédula ni pago | [pagos/](https://github.com/juanramirezla-ctrl/dina-express/tree/main/backend/src/pagos) |
 
-El sistema no incluye pasarela de pagos.
+Además se agregaron, a partir de lo que pedí al probar: lista de solicitudes para la coordinadora, reserva del vehículo elegido y cancelación que lo libera. El sistema no incluye pasarela de pagos.
 
 ### Pruebas
 
-- **107 pruebas** en 10 grupos, todas pasan; linter sin avisos.
-- **Cobertura de líneas de la lógica del negocio: 80 %** (`precio` y `pagos` 100 %, `viajes` 98 %, `flota` 0 %), medida con Jest el 26/11 sobre esas cuatro carpetas.
-- Última ejecución en `main` al escribir: [#5, en verde](https://github.com/juanramirezla-ctrl/dina-express/actions/runs/45911244925) (commit 2e93f33). Todas: [Actions](https://github.com/juanramirezla-ctrl/dina-express/actions).
+- **143 pruebas en la API** (15 grupos) y **23 en la web** (6 grupos), todas pasan; linter sin avisos.
+- **Cobertura de líneas de la lógica del negocio de la API: 91 %** (`precio` y `pagos` 100 %, `viajes` 96 %, `flota` 83 %), medida con Jest el 26/11. Los controladores de rutas son lo menos cubierto. No medí la cobertura de la web.
+- La reserva se probó además contra PostgreSQL: 201, 409 al pedir el mismo vehículo, 401 sin clave y vehículo libre tras cancelar.
+- Última ejecución del pipeline al escribir: [#13, en verde](https://github.com/juanramirezla-ctrl/dina-express/actions/runs/45922940082). Todas: [Actions](https://github.com/juanramirezla-ctrl/dina-express/actions).
 
 ### Pendientes y por qué
 
 | Pendiente | Por qué |
 |---|---|
-| Frontend Ionic y Angular | No alcanzó el tiempo; prioricé la API, las pruebas y el pipeline |
-| Rutas de precio, disponibilidad, anticipo y reembolso | Mismo motivo; existen como funciones |
-| Pruebas de `flota` | La función se integró sin ellas, contra mi propia metodología |
-| Inicio de sesión y roles (RNF-01, HU-10) | No implementados |
-| Vulnerabilidades (H-06 y H-07) | Requieren cambios de versión mayor |
+| Pantallas de precio, conductores, anticipo y reembolso | No alcanzó el tiempo; existen como funciones |
+| Usuarios y roles (RNF-01, HU-10) | Solo hay una clave compartida |
+| Límite de solicitudes y vencimiento de reservas | Hoy alguien podría bloquear la flota con solicitudes falsas (H-08) |
+| Vulnerabilidades de la API (H-06 y H-07) | Requieren cambios de versión mayor |
 | Despliegue y restauración de respaldo | No hay servidor; el respaldo se hizo, la restauración no se probó |
-| RNF-02, RNF-03 y RNF-04 | Sin interfaz ni despliegue no se pueden medir |
+| RNF-02, RNF-03 y RNF-04 | La web se revisó en tamaño de celular, pero no se midieron tiempos ni disponibilidad |
 
 ## 6. Reflexión ética y legal
 
 | Principio | Decisión en mi proyecto | Evidencia |
 |---|---|---|
-| Datos personales (Ley 1581 de 2012) | Pruebas y documentos con datos ficticios; quité nombres antes de publicar; `.env` fuera del repositorio; consultas parametrizadas. **Falta** pedir autorización y explicar la finalidad antes de guardar nombre y contacto, y permitir consultar, corregir y borrar. Con datos reales no debe usarse todavía | [datos sintéticos](https://github.com/juanramirezla-ctrl/dina-express/blob/main/backend/tests/fixtures/viajes-sinteticos.ts), [viajes.service.ts](https://github.com/juanramirezla-ctrl/dina-express/blob/main/backend/src/viajes/viajes.service.ts) |
-| Sesgo | La regla de la clienta pone primero el vehículo que quedó libre más recientemente. Aplicada sin control, puede concentrar el trabajo en los mismos vehículos y conductores y dejar a otros esperando. La respeté, y la coordinadora debe decidir la asignación; falta revisarlo con la clienta | [disponibilidad.ts](https://github.com/juanramirezla-ctrl/dina-express/blob/main/backend/src/flota/disponibilidad.ts), HU-05 |
+| Datos personales (Ley 1581 de 2012) | Datos ficticios en pruebas y documentos; `.env` fuera del repositorio; consultas parametrizadas; la web informa la finalidad y exige autorización; las solicitudes solo se ven con clave. **Falta** guardar la autorización, permitir consultar y borrar datos y usar usuarios con roles. Con datos reales no debe usarse todavía | [home](https://github.com/juanramirezla-ctrl/dina-express/tree/main/frontend/src/app/home), [revisión, H-09 y H-10](https://github.com/juanramirezla-ctrl/dina-express/blob/main/revision_seguridad.md) |
+| Sesgo | Se muestra primero el vehículo liberado más recientemente (regla de la clienta). Puede concentrar el trabajo en los mismos vehículos y conductores; falta revisarlo con ella. La reserva la gana quien llega primero | [flota.service.ts](https://github.com/juanramirezla-ctrl/dina-express/blob/main/backend/src/flota/flota.service.ts) |
 | Transparencia | Declaro el uso de IA en README, bitácora e informe, incluidos sus errores. El producto no usa IA para decidir sobre nadie | [bitácora](https://github.com/juanramirezla-ctrl/dina-express/blob/main/bitacora_ia.md) |
-| Responsabilidad | Respondo por el código aunque lo haya propuesto la IA. El sistema no asigna ni cobra solo; los supuestos quedan marcados para que la clienta los confirme | [registro de pruebas](https://github.com/juanramirezla-ctrl/dina-express/blob/main/registro_pruebas.md) |
-| Propiedad intelectual y política de uso | Dependencias con licencia MIT o Apache-2.0; proyecto de uso académico. No copié en `docs/` los logos de empresas clientes. **No revisé a fondo los términos de uso de los asistentes** y la empresa no tiene una política escrita de IA | [package.json](https://github.com/juanramirezla-ctrl/dina-express/blob/main/backend/package.json), [README](https://github.com/juanramirezla-ctrl/dina-express#8-autor-y-licencia) |
+| Responsabilidad | Respondo por el código aunque lo haya propuesto la IA. La coordinadora decide: revisa, contacta y elimina la solicitud. Los supuestos quedan marcados | [panel](https://github.com/juanramirezla-ctrl/dina-express/tree/main/frontend/src/app/panel), [registro de pruebas](https://github.com/juanramirezla-ctrl/dina-express/blob/main/registro_pruebas.md) |
+| Propiedad intelectual y política de uso | Logo, foto y textos de la empresa usados con su autorización; sin logos de empresas clientes. Dependencias de la API con licencia MIT o Apache-2.0; no revisé una por una las de la web. **No revisé a fondo los términos de los asistentes** y la empresa no tiene política escrita de IA | [README](https://github.com/juanramirezla-ctrl/dina-express#8-autor-y-licencia) |
 
 **El dilema principal: evidencia contra privacidad.** La entrega pide enlazar la evidencia de cada fase en un repositorio público y, a la vez, que no haya datos personales reales. Mis documentos originales tenían un nombre propio y un número de teléfono, y las citas de la entrevista son palabras de una persona real. Publicarlos tal cual daba mejor evidencia; no publicarlos protegía a las personas pero dejaba afirmaciones sin respaldo. Decidí publicar versiones sin nombres ni teléfonos, conservar textuales solo las frases que justifican requisitos, declarar en cada documento qué se quitó y no subir grabaciones ni capturas. El costo es que esas versiones no son idénticas a las originales. Queda una limitación: los textos originales sí pasaron por asistentes de IA, y la próxima vez los limpiaría antes de compartirlos.
 
 ## 7. Aprendizajes
 
-**Qué sé hacer ahora.** Escribir pruebas antes del código y verlas fallar por la razón correcta; usar casos límite y tablas de decisión; conectar una API a PostgreSQL con consultas parametrizadas; trabajar con ramas, pull requests y un pipeline.
+**Qué sé hacer ahora.** Escribir pruebas antes del código y verlas fallar por la razón correcta; usar casos límite y tablas de decisión; conectar una web, una API y PostgreSQL con consultas parametrizadas; reservar un recurso sin que dos personas lo tomen a la vez; trabajar con ramas, pull requests y un pipeline.
 
-**En qué confié de más.** En que una afirmación seguía siendo cierta porque lo fue una vez (las vulnerabilidades), en una regla de `.gitignore` que parecía obvia y en integrar la función de flota sin pruebas.
+**En qué confié de más.** En que una afirmación seguía siendo cierta porque lo fue una vez (las vulnerabilidades), en una regla de `.gitignore` que parecía obvia, en integrar la función de flota sin pruebas y en dar por cerrados procesos que seguían encendidos.
 
 **Qué aprendí sobre la IA.** Sirve más cuando le doy contexto y restricciones. Su respuesta es un punto de partida: la verificación es una prueba, un comando o una frase de la clienta.
 
-**Qué haría distinto.** Preguntar a la clienta lo que hoy son supuestos (si la ganancia es fija o porcentaje, cuánto se reembolsa), construir una historia completa de extremo a extremo antes de abrir otras, guardar el texto exacto de cada prompt y revisar la auditoría en cada cambio de dependencias.
+**Qué haría distinto.** Preguntar a la clienta lo que hoy son supuestos (si la ganancia es fija o porcentaje, cuánto se reembolsa), construir una historia completa de extremo a extremo desde el principio, y no dejar la web para el final, guardar el texto exacto de cada prompt y revisar la auditoría en cada cambio de dependencias.
 
 ## 8. Anexos
 

@@ -1,0 +1,50 @@
+{
+  "name": "dina-express-frontend",
+  "version": "0.0.1",
+  "author": "Juan José Ramírez Lasso",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --port 8100",
+    "build": "ng build",
+    "test": "ng test --no-watch",
+    "lint": "ng lint --max-warnings 0"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "22.3.0",
+    "@angular/compiler": "22.3.0",
+    "@angular/core": "22.3.0",
+    "@angular/forms": "22.3.0",
+    "@angular/platform-browser": "22.3.0",
+    "@angular/router": "22.3.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.3",
+    "@capacitor/haptics": "8.0.2",
+    "@capacitor/keyboard": "8.0.6",
+    "@capacitor/status-bar": "8.0.4",
+    "@ionic/angular": "9.0.14",
+    "ionicons": "8.1.1",
+    "rxjs": "7.8.2",
+    "tslib": "2.9.1"
+  },
+  "devDependencies": {
+    "@angular/build": "22.3.0",
+    "@angular/cli": "22.3.0",
+    "@angular/compiler-cli": "22.3.0",
+    "@angular/language-service": "22.3.0",
+    "@capacitor/cli": "8.6.3",
+    "@ionic/angular-toolkit": "13.0.0",
+    "@ionic/eslint-config": "0.5.0",
+    "@ionic/prettier-config": "4.0.0",
+    "@types/node": "26.6.11",
+    "angular-eslint": "22.6.0",
+    "eslint": "10.15.0",
+    "jsdom": "31.0.1",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.74.0",
+    "vitest": "5.1.2"
+  },
+  "prettier": "@ionic/prettier-config",
+  "description": "Formulario web de solicitud de viaje (HU-01)"
+}

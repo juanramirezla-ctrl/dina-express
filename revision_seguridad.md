@@ -78,3 +78,15 @@ Las secciones anteriores describen el estado del 14/11, antes de que existieran 
 | H-07 | `npm audit` reporta 28 vulnerabilidades (3 bajas, 16 moderadas, 9 altas). **9 están en dependencias de producción** (4 moderadas, 5 altas), según `npm audit --omit=dev`; entre ellas, paquetes que usa NestJS. La frase de H-06 «solo afectan herramientas de desarrollo» ya no es válida para el proyecto | Alta | Pendiente: corregirlas requiere cambios de versión mayor. No desplegar antes de resolverlas |
 
 Otros pendientes actuales: `POST /viajes` no pide autorización de tratamiento de datos ni limita peticiones; no hay inicio de sesión ni roles (RNF-01). Las consultas ya usan parámetros.
+
+## 6. Revisión de la web y la flota (26 de noviembre de 2026)
+
+Controles aplicados: consultas con parámetros; validación en la API; clave de la coordinadora comparada en tiempo constante y que no deja pasar si está sin configurar; reserva del vehículo en una sola consulta; Angular escapa el texto que muestra. La web no tiene vulnerabilidades reportadas por `npm audit`.
+
+| Id | Problema | Severidad | Estado |
+|---|---|---|---|
+| H-08 | `POST /viajes` es público y sin límite: alguien podría reservar todos los vehículos con solicitudes falsas | Alta | Pendiente |
+| H-09 | Una sola clave compartida, sin usuarios, roles ni registro de quién hizo qué; sin límite de intentos | Alta | Pendiente (RNF-01) |
+| H-10 | La autorización de datos se exige en la web, pero no se guarda y la API no la pide | Media | Pendiente |
+| H-11 | `/vehiculos/disponibles` muestra la placa a cualquier persona | Baja | Decisión del alcance; confirmar con la empresa |
+| H-12 | Sin HTTPS (solo ejecución local) | Alta antes de desplegar | Pendiente |

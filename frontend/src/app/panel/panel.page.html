@@ -1,0 +1,108 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Panel de coordinación</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/home">Inicio</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main>
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+    @if (exito()) {
+      <p class="exito" role="status">{{ exito() }}</p>
+    }
+
+    @if (!dentro()) {
+      <ion-card>
+        <ion-card-content>
+          <form [formGroup]="acceso" (ngSubmit)="entrar()">
+            <ion-input label="Clave de la coordinadora" labelPlacement="stacked" type="password" formControlName="clave">
+            </ion-input>
+            <ion-button type="submit" expand="block">Entrar</ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    } @else {
+      <h2>Solicitudes</h2>
+      <ion-button size="small" fill="outline" (click)="cargarSolicitudes()">Actualizar</ion-button>
+      @for (solicitud of solicitudes(); track solicitud.id_viaje) {
+        <ion-card>
+          <ion-card-content>
+            <strong>{{ solicitud.nombre }}</strong>
+            <p>{{ solicitud.origen }} → {{ solicitud.destino }} · {{ solicitud.fecha_servicio }}</p>
+            <p>Vehículo: {{ solicitud.placa ?? 'sin asignar' }} · Estado: {{ solicitud.estado }}</p>
+            @if (solicitud.telefono) {
+              <ion-button size="small" [href]="'tel:' + solicitud.telefono">Llamar {{ solicitud.telefono }}</ion-button>
+              <ion-button
+                size="small"
+                fill="outline"
+                target="_blank"
+                rel="noopener noreferrer"
+                [href]="'https://wa.me/57' + solicitud.telefono"
+              >
+                WhatsApp
+              </ion-button>
+            }
+            @if (solicitud.email) {
+              <ion-button size="small" fill="outline" [href]="'mailto:' + solicitud.email">{{ solicitud.email }}</ion-button>
+            }
+            <ion-button size="small" color="danger" fill="outline" (click)="eliminar(solicitud.id_viaje)">
+              Eliminar solicitud
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      } @empty {
+        <p>No hay solicitudes.</p>
+      }
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Registrar vehículo</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form [formGroup]="nuevo" (ngSubmit)="registrar()">
+            <ion-list>
+              <ion-item>
+                <ion-select label="Tipo" labelPlacement="stacked" formControlName="tipo" interface="popover">
+                  @for (tipo of tipos; track tipo.valor) {
+                    <ion-select-option [value]="tipo.valor">{{ tipo.nombre }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-input label="Placa" labelPlacement="stacked" formControlName="placa" maxlength="7"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input label="Marca" labelPlacement="stacked" formControlName="marca" maxlength="40"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input label="Modelo" labelPlacement="stacked" formControlName="modelo" maxlength="40"></ion-input>
+              </ion-item>
+            </ion-list>
+            <ion-button type="submit" expand="block">Registrar</ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+      <h2>Flota</h2>
+      @for (vehiculo of vehiculos(); track vehiculo.id_vehiculo) {
+        <ion-card>
+          <ion-card-content>
+            <strong>{{ vehiculo.placa }} · {{ nombreTipo(vehiculo.tipo) }}</strong>
+            <p>{{ vehiculo.marca }} {{ vehiculo.modelo }}</p>
+            <p>{{ vehiculo.estado === 'disponible' ? 'Disponible (en standby)' : 'En servicio' }}</p>
+            <ion-button size="small" fill="outline" (click)="alternar(vehiculo)">
+              {{ vehiculo.estado === 'disponible' ? 'Marcar en servicio' : 'Marcar disponible' }}
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      } @empty {
+        <p>No hay vehículos registrados.</p>
+      }
+    }
+  </main>
+</ion-content>
