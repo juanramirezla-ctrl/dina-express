@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { CoordinadoraGuard } from '../flota/coordinadora.guard';
 import { SolicitudRecibida, ViajesService } from './viajes.service';
 
@@ -12,6 +12,14 @@ export class ViajesController {
   @UseGuards(CoordinadoraGuard)
   listar(): Promise<SolicitudRecibida[]> {
     return this.viajes.listar();
+  }
+
+  /** Cancela la solicitud y libera su vehículo: solo la coordinadora. */
+  @Delete(':id')
+  @UseGuards(CoordinadoraGuard)
+  async cancelar(@Param('id', ParseIntPipe) id: number): Promise<{ mensaje: string }> {
+    await this.viajes.cancelar(id);
+    return { mensaje: 'Solicitud eliminada' };
   }
 
   /**

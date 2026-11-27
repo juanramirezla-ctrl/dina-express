@@ -21,8 +21,12 @@ export interface DatosVehiculo {
   modelo: string;
 }
 
-export interface Vehiculo extends DatosVehiculo {
+/** Vehículo disponible que el cliente puede elegir. */
+export interface VehiculoDisponible extends DatosVehiculo {
   id_vehiculo: number;
+}
+
+export interface Vehiculo extends VehiculoDisponible {
   estado: string;
 }
 
@@ -33,8 +37,8 @@ export class FlotaService {
   private readonly url = `${environment.apiUrl}/vehiculos`;
 
   /** Consulta pública del cliente. */
-  disponibles(tipo: string): Observable<DatosVehiculo[]> {
-    return this.http.get<DatosVehiculo[]>(`${this.url}/disponibles`, { params: { tipo } });
+  disponibles(tipo: string): Observable<VehiculoDisponible[]> {
+    return this.http.get<VehiculoDisponible[]>(`${this.url}/disponibles`, { params: { tipo } });
   }
 
   todos(clave: string): Observable<Vehiculo[]> {

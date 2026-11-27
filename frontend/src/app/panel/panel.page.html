@@ -34,7 +34,7 @@
           <ion-card-content>
             <strong>{{ solicitud.nombre }}</strong>
             <p>{{ solicitud.origen }} → {{ solicitud.destino }} · {{ solicitud.fecha_servicio }}</p>
-            <p>Estado: {{ solicitud.estado }}</p>
+            <p>Vehículo: {{ solicitud.placa ?? 'sin asignar' }} · Estado: {{ solicitud.estado }}</p>
             @if (solicitud.telefono) {
               <ion-button size="small" [href]="'tel:' + solicitud.telefono">Llamar {{ solicitud.telefono }}</ion-button>
               <ion-button
@@ -50,6 +50,9 @@
             @if (solicitud.email) {
               <ion-button size="small" fill="outline" [href]="'mailto:' + solicitud.email">{{ solicitud.email }}</ion-button>
             }
+            <ion-button size="small" color="danger" fill="outline" (click)="eliminar(solicitud.id_viaje)">
+              Eliminar solicitud
+            </ion-button>
           </ion-card-content>
         </ion-card>
       } @empty {

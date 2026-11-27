@@ -20,10 +20,11 @@ import {
   IonToolbar,
 } from '@ionic/angular';
 
-import { FlotaService, TIPOS, type DatosVehiculo } from '../flota/flota.service';
+import { FlotaService, TIPOS, type VehiculoDisponible } from '../flota/flota.service';
 import { SolicitudService } from '../solicitud/solicitud.service';
 
 const MENSAJE_CAMPOS = 'Complete nombre, origen, destino y fecha';
+const MENSAJE_VEHICULO = 'Elija un vehículo disponible';
 const MENSAJE_CONTACTO = 'Falta un dato de contacto: teléfono o correo';
 const MENSAJE_AUTORIZACION = 'Debe autorizar el tratamiento de sus datos';
 const MENSAJE_SIN_CONEXION = 'No se pudo enviar la solicitud. Intente de nuevo más tarde';
@@ -58,7 +59,9 @@ export class HomePage {
   private readonly flota = inject(FlotaService);
 
   readonly tipos = TIPOS;
-  readonly disponibles = signal<DatosVehiculo[]>([]);
+  readonly disponibles = signal<VehiculoDisponible[]>([]);
+  readonly elegido = signal<VehiculoDisponible | null>(null);
+  private tipoConsultado = '';
   readonly avisoFlota = signal('');
 
   readonly formulario = inject(FormBuilder).nonNullable.group({
@@ -87,6 +90,8 @@ export class HomePage {
 
   /** Muestra al cliente los vehículos disponibles del tipo elegido. */
   consultar(tipo: string): void {
+    this.tipoConsultado = tipo;
+    this.elegido.set(null);
     this.disponibles.set([]);
     this.avisoFlota.set('');
     this.flota.disponibles(tipo).subscribe({
@@ -96,6 +101,11 @@ export class HomePage {
       },
       error: () => this.avisoFlota.set('No se pudo consultar la disponibilidad'),
     });
+  }
+
+  elegir(vehiculo: VehiculoDisponible): void {
+    this.elegido.set(vehiculo);
+    this.error.set('');
   }
 
   /** Envía la solicitud si el formulario está completo y hay autorización. */
@@ -108,17 +118,31 @@ export class HomePage {
     }
     const { nombre, telefono, email, origen, destino, fechaServicio } = this.formulario.getRawValue();
     this.enviando.set(true);
-    this.solicitudes.enviar({ nombre, telefono, email, origen, destino, fechaServicio }).subscribe({
+    const idVehiculo = this.elegido()?.id_vehiculo;
+    const solicitud = { nombre, telefono, email, origen, destino, fechaServicio, idVehiculo };
+    this.solicitudes.enviar(solicitud).subscribe({
       next: ({ mensaje }) => {
         this.enviando.set(false);
         this.exito.set(mensaje);
         this.formulario.reset();
+        this.actualizarDisponibles();
       },
       error: (fallo: HttpErrorResponse) => {
         this.enviando.set(false);
-        this.error.set(fallo.status === 400 ? fallo.error.message : MENSAJE_SIN_CONEXION);
+        this.error.set([400, 409].includes(fallo.status) ? fallo.error.message : MENSAJE_SIN_CONEXION);
+        if (fallo.status === 409) {
+          this.actualizarDisponibles();
+        }
       },
     });
+  }
+
+  /** Vuelve a consultar para no mostrar un vehículo ya reservado. */
+  private actualizarDisponibles(): void {
+    this.elegido.set(null);
+    if (this.tipoConsultado) {
+      this.consultar(this.tipoConsultado);
+    }
   }
 
   /** Primer problema del formulario, o '' si se puede enviar. La API vuelve a validar los datos. */
@@ -126,6 +150,9 @@ export class HomePage {
     const { nombre, telefono, email, origen, destino, fechaServicio, autorizacion } = this.formulario.getRawValue();
     if ([nombre, origen, destino, fechaServicio].some((campo) => !campo?.trim())) {
       return MENSAJE_CAMPOS;
+    }
+    if (!this.elegido()) {
+      return MENSAJE_VEHICULO;
     }
     if (!telefono?.trim() && !email?.trim()) {
       return MENSAJE_CONTACTO;

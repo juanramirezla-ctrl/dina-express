@@ -82,6 +82,22 @@ export class PanelPage {
     });
   }
 
+  /** Elimina la solicitud (queda cancelada) y su vehículo vuelve a estar disponible. */
+  eliminar(idViaje: number): void {
+    this.limpiar();
+    if (!window.confirm('¿Eliminar esta solicitud y liberar el vehículo?')) {
+      return;
+    }
+    this.pedidos.cancelar(idViaje, this.clave()).subscribe({
+      next: () => {
+        this.exito.set('Solicitud eliminada');
+        this.cargar();
+        this.cargarSolicitudes();
+      },
+      error: (fallo: HttpErrorResponse) => this.fallar(fallo),
+    });
+  }
+
   registrar(): void {
     this.limpiar();
     const datos = this.nuevo.getRawValue();

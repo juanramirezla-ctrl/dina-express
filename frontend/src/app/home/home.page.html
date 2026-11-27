@@ -30,7 +30,13 @@
           <p class="error" role="status">{{ avisoFlota() }}</p>
         }
         @for (vehiculo of disponibles(); track vehiculo.placa) {
-          <p class="exito">Disponible: {{ vehiculo.marca }} {{ vehiculo.modelo }} · placa {{ vehiculo.placa }}</p>
+          <ion-button
+            expand="block"
+            [fill]="elegido()?.id_vehiculo === vehiculo.id_vehiculo ? 'solid' : 'outline'"
+            (click)="elegir(vehiculo)"
+          >
+            {{ vehiculo.marca }} {{ vehiculo.modelo }} · {{ vehiculo.placa }}
+          </ion-button>
         }
       </ion-card-content>
     </ion-card>
@@ -40,6 +46,11 @@
         <ion-card-title>Solicite su viaje</ion-card-title>
       </ion-card-header>
       <ion-card-content>
+        @if (elegido(); as vehiculo) {
+          <p class="exito">Vehículo elegido: {{ vehiculo.marca }} {{ vehiculo.modelo }} · {{ vehiculo.placa }}</p>
+        } @else {
+          <p>Primero elija un vehículo en «Consulte la disponibilidad».</p>
+        }
         <form [formGroup]="formulario" (ngSubmit)="enviar()">
           <ion-list>
             <ion-item>

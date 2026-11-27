@@ -44,6 +44,7 @@ export interface FilaVehiculo {
 
 /** Lo que ve el cliente de un vehículo disponible. */
 export interface VehiculoPublico {
+  id_vehiculo: number;
   placa: string;
   tipo: string | null;
   marca: string | null;
@@ -88,8 +89,8 @@ export class FlotaService {
     const { rows } = await this.baseDatos.consultar<FilaVehiculo>(SQL_DISPONIBLES, [tipoValido(tipo)]);
     const flota = rows.map((fila) => ({ ...fila, disponibleDesde: fila.disponible_desde }));
     return listarVehiculosDisponibles(flota).map((vehiculo) => {
-      const { placa, tipo: clase, marca, modelo } = vehiculo as unknown as FilaVehiculo;
-      return { placa, tipo: clase, marca, modelo };
+      const { id_vehiculo, placa, tipo: clase, marca, modelo } = vehiculo as unknown as FilaVehiculo;
+      return { id_vehiculo, placa, tipo: clase, marca, modelo };
     });
   }
 

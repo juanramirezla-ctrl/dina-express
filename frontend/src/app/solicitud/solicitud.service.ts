@@ -12,6 +12,7 @@ export interface Solicitud {
   origen: string;
   destino: string;
   fechaServicio: string;
+  idVehiculo?: number;
 }
 
 export interface Respuesta {
@@ -29,6 +30,7 @@ export interface SolicitudRecibida {
   destino: string;
   fecha_servicio: string;
   estado: string;
+  placa?: string | null;
 }
 
 /** Comunicación con la API para las solicitudes de viaje (HU-01). */
@@ -38,6 +40,13 @@ export class SolicitudService {
 
   listar(clave: string): Observable<SolicitudRecibida[]> {
     return this.http.get<SolicitudRecibida[]>(`${environment.apiUrl}/viajes`, {
+      headers: { 'x-clave-coordinadora': clave },
+    });
+  }
+
+  /** Cancela la solicitud y libera el vehículo. */
+  cancelar(idViaje: number, clave: string): Observable<unknown> {
+    return this.http.delete(`${environment.apiUrl}/viajes/${idViaje}`, {
       headers: { 'x-clave-coordinadora': clave },
     });
   }
