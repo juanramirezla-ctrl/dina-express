@@ -1,7 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
+import { FlotaService } from '../flota/flota.service';
 import { SolicitudService } from '../solicitud/solicitud.service';
 
 import { HomePage } from './home.page';
@@ -23,7 +25,9 @@ describe('HomePage: formulario de solicitud (HU-01)', () => {
   beforeEach(() => {
     enviar.mockReset();
     enviar.mockReturnValue(of({ mensaje: 'Solicitud recibida', idViaje: 7 }));
-    TestBed.configureTestingModule({ providers: [{ provide: SolicitudService, useValue: { enviar } }] });
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), { provide: SolicitudService, useValue: { enviar } }, { provide: FlotaService, useValue: {} }],
+    });
     pagina = TestBed.createComponent(HomePage).componentInstance;
   });
 
@@ -79,5 +83,46 @@ describe('HomePage: formulario de solicitud (HU-01)', () => {
     pagina.enviar();
 
     expect(pagina.error()).toBe('No se pudo enviar la solicitud. Intente de nuevo más tarde');
+  });
+});
+
+describe('HomePage: consulta de vehiculos disponibles', () => {
+  const disponibles = vi.fn();
+  const camioneta = { placa: 'TKX123', tipo: 'camioneta', marca: 'Toyota', modelo: 'Hilux' };
+  let pagina: HomePage;
+
+  beforeEach(() => {
+    disponibles.mockReset();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        { provide: SolicitudService, useValue: {} },
+        { provide: FlotaService, useValue: { disponibles } },
+      ],
+    });
+    pagina = TestBed.createComponent(HomePage).componentInstance;
+  });
+
+  it('muestra los vehiculos disponibles del tipo elegido', () => {
+    disponibles.mockReturnValue(of([camioneta]));
+    pagina.consultar('camioneta');
+
+    expect(disponibles).toHaveBeenCalledWith('camioneta');
+    expect(pagina.disponibles()).toEqual([camioneta]);
+    expect(pagina.avisoFlota()).toBe('');
+  });
+
+  it('avisa si no hay disponibles', () => {
+    disponibles.mockReturnValue(of([]));
+    pagina.consultar('volqueta');
+
+    expect(pagina.avisoFlota()).toBe('No hay vehículos disponibles de este tipo');
+  });
+
+  it('avisa si no se puede consultar', () => {
+    disponibles.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 0 })));
+    pagina.consultar('volqueta');
+
+    expect(pagina.avisoFlota()).toBe('No se pudo consultar la disponibilidad');
   });
 });
