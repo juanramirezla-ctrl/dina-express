@@ -26,20 +26,31 @@ describe('HomePage: formulario de solicitud (HU-01)', () => {
     enviar.mockReset();
     enviar.mockReturnValue(of({ mensaje: 'Solicitud recibida', idViaje: 7 }));
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), { provide: SolicitudService, useValue: { enviar } }, { provide: FlotaService, useValue: {} }],
+      providers: [provideRouter([]), { provide: SolicitudService, useValue: { enviar } }, { provide: FlotaService, useValue: { disponibles: () => of([]) } }],
     });
     pagina = TestBed.createComponent(HomePage).componentInstance;
+    pagina.elegir({ id_vehiculo: 3, placa: 'TKX123', tipo: 'camioneta', marca: 'Toyota', modelo: 'Hilux' });
   });
 
   it('envia los datos sin la casilla de autorizacion y muestra la confirmacion', () => {
     pagina.formulario.setValue(datos);
     pagina.enviar();
 
-    const { autorizacion, ...esperado } = datos;
+    const { autorizacion, ...resto } = datos;
+    const esperado = { ...resto, idVehiculo: 3 };
     expect(autorizacion).toBe(true);
     expect(enviar).toHaveBeenCalledWith(esperado);
     expect(pagina.exito()).toBe('Solicitud recibida');
     expect(pagina.error()).toBe('');
+  });
+
+  it('no envia sin elegir un vehiculo', () => {
+    pagina.elegido.set(null);
+    pagina.formulario.setValue(datos);
+    pagina.enviar();
+
+    expect(enviar).not.toHaveBeenCalled();
+    expect(pagina.error()).toBe('Elija un vehículo disponible');
   });
 
   it('no envia sin telefono ni correo (HU-01, escenario 2)', () => {

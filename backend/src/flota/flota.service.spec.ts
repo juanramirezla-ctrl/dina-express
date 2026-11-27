@@ -51,8 +51,8 @@ describe('FlotaService (HU-03 y HU-05)', () => {
     const { servicio, consultar } = crear([fila('AAA111', 8), fila('BBB222', 10)]);
 
     await expect(servicio.disponibles('camioneta')).resolves.toEqual([
-      { placa: 'BBB222', tipo: 'camioneta', marca: 'Nissan', modelo: 'Frontier' },
-      { placa: 'AAA111', tipo: 'camioneta', marca: 'Nissan', modelo: 'Frontier' },
+      { id_vehiculo: 10, placa: 'BBB222', tipo: 'camioneta', marca: 'Nissan', modelo: 'Frontier' },
+      { id_vehiculo: 8, placa: 'AAA111', tipo: 'camioneta', marca: 'Nissan', modelo: 'Frontier' },
     ]);
     expect(consultar.mock.calls[0][1]).toEqual(['camioneta']);
   });

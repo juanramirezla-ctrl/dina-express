@@ -18,7 +18,7 @@ describe('PanelPage: panel de la coordinadora', () => {
     modelo: 'Hilux',
     estado: 'disponible',
   };
-  const solicitudes = { listar: vi.fn() };
+  const solicitudes = { listar: vi.fn(), cancelar: vi.fn() };
   const pedido = { id_viaje: 1, nombre: 'Camila Rojas', telefono: '3000000000' };
   let pagina: PanelPage;
 
@@ -52,6 +52,23 @@ describe('PanelPage: panel de la coordinadora', () => {
 
     expect(solicitudes.listar).toHaveBeenCalledWith('secreta');
     expect(pagina.solicitudes()).toEqual([pedido]);
+  });
+
+  it('elimina una solicitud y recarga las listas para ver el vehiculo libre', () => {
+    solicitudes.cancelar.mockReturnValue(of({}));
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    pagina.eliminar(1);
+
+    expect(solicitudes.cancelar).toHaveBeenCalledWith(1, 'secreta');
+    expect(solicitudes.listar).toHaveBeenCalled();
+    expect(flota.todos).toHaveBeenCalled();
+  });
+
+  it('no elimina si la coordinadora no confirma', () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    pagina.eliminar(1);
+
+    expect(solicitudes.cancelar).not.toHaveBeenCalled();
   });
 
   it('no entra con una clave incorrecta', () => {
