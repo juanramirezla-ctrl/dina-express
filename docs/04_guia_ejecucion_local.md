@@ -4,95 +4,75 @@ Escrita el 26 de noviembre de 2026 con ayuda de IA (Claude), para la entrega fin
 
 ## 1. Requisitos
 
-- Node.js 20 o superior y npm (probado con Node 24; el pipeline usa Node 22).
-- Git.
-- PostgreSQL (probado con PostgreSQL 18).
+- Node.js 22.22 o superior y npm (probado con Node 24).
+- Git, PostgreSQL (probado con 18) y, si se quiere, Ionic CLI.
 
 ## 2. Instalación
 
 ```bash
 git clone https://github.com/juanramirezla-ctrl/dina-express.git
-cd dina-express/backend
-npm ci
+cd dina-express/backend && npm ci
+cd ../frontend && npm ci
 ```
 
-Copia `.env.example` (en la raíz) a `backend/.env` y completa los valores. El `.env` no se sube al repositorio.
+Copia `.env.example` (en la raíz) a `backend/.env`, completa los valores y define `CLAVE_COORDINADORA` (letras y números, sin comillas ni `#`). El `.env` no se sube.
 
 ## 3. Base de datos (solo la primera vez)
 
-Desde la raíz del repositorio, en Git Bash. `psql` pide la contraseña.
+Desde la raíz, en Git Bash. Los comandos piden la contraseña.
 
 ```bash
 PG="/c/Program Files/PostgreSQL/18/bin"
 "$PG/createdb.exe" -h localhost -U postgres dina_express
 "$PG/psql.exe" -h localhost -U postgres -d dina_express -f database/01_esquema.sql
 "$PG/psql.exe" -h localhost -U postgres -d dina_express -f database/02_datos_prueba.sql
+"$PG/psql.exe" -h localhost -U postgres -d dina_express -f database/03_tipo_vehiculo.sql
 ```
 
-**Cuidado:** `01_esquema.sql` borra las tablas antes de crearlas. No lo ejecutes sobre una base con datos que quieras conservar. Los datos de prueba son ficticios.
+**Cuidado:** `01_esquema.sql` borra las tablas antes de crearlas. `03_tipo_vehiculo.sql` no borra datos.
 
-## 4. Arranque de la API
+## 4. Arranque
 
+Terminal 1:
 ```bash
-cd backend
-npm run start:dev
+cd backend && npm run start:dev
+```
+Terminal 2:
+```bash
+cd frontend && ionic serve
 ```
 
-Queda en `http://localhost:3000`. Se detiene con Ctrl+C.
+La web abre en `http://localhost:8100` y debe usar ese puerto. Si se cambia `.env`, hay que reiniciar la API.
 
 ## 5. Comprobaciones
 
-En otra terminal:
-
-```bash
-curl -i http://localhost:3000/salud
-curl -i http://localhost:3000/salud/base-datos
-```
-
-| Petición | Respuesta esperada |
+| Paso | Resultado esperado |
 |---|---|
-| `GET /salud` | 200 `{"estado":"ok"}` |
-| `GET /salud/base-datos` | 200 `{"baseDatos":"ok"}` (503 si no hay conexión) |
+| `http://localhost:3000/salud` | `{"estado":"ok"}` |
+| `http://localhost:3000/salud/base-datos` | `{"baseDatos":"ok"}` |
+| Elegir «Camioneta» en la web | Aparecen las camionetas libres |
+| Elegir una y enviar con datos ficticios | «Solicitud recibida»; ese vehículo deja de aparecer |
+| `/panel` con la clave | Solicitudes y flota |
+| «Eliminar solicitud» | El vehículo vuelve a aparecer |
 
-Solicitud sin teléfono ni correo (HU-01, error; no guarda nada):
-
-```bash
-curl -i -X POST http://localhost:3000/viajes -H "Content-Type: application/json" \
-  -d '{"nombre":"Camila Rojas","origen":"Neiva","destino":"Pitalito","fechaServicio":"2026-12-01"}'
-```
-
-Respuesta: 400 `Falta un dato de contacto: teléfono o correo`.
-
-Solicitud válida (**guarda un cliente y un viaje**; usa solo datos ficticios):
+## 6. Pruebas
 
 ```bash
-curl -i -X POST http://localhost:3000/viajes -H "Content-Type: application/json" \
-  -d '{"nombre":"Camila Rojas","telefono":"3000000000","origen":"Neiva","destino":"Pitalito","fechaServicio":"2026-12-01"}'
+cd backend && npm test && npm run lint
+cd ../frontend && npm test && npm run lint && npm run build
 ```
 
-Respuesta esperada: 201 `{"mensaje":"Solicitud recibida","idViaje":<número>}`.
+## 7. Qué se comprobó (26/11/2026)
 
-## 6. Pruebas y linter
-
-```bash
-cd backend
-npm test
-npm run lint
-```
-
-## 7. Qué se comprobó al escribir esta guía
-
-| Comando | Resultado el 26/11/2026 |
+| Comprobación | Resultado |
 |---|---|
-| `npm run start:dev` | La API arrancó |
-| `GET /salud` | 200 |
-| `GET /salud/base-datos` | 200 |
-| `POST /viajes` sin contacto | 400 |
-| `npm test` | 107 pruebas pasan, 10 suites |
-| `npm run lint` | Sin avisos |
+| Rutas de salud | 200 |
+| Reserva, segundo intento sobre el mismo vehículo, lista, cancelación | 201, 409, 200, 200 (contra PostgreSQL local, con datos ficticios) |
+| Cancelar sin clave | 401 |
+| Pruebas de la API y de la web | 143 y 23 pasan |
 
-**No se ejecutaron en esta revisión:** la instalación desde cero (`npm ci` sí corre en cada ejecución del pipeline), la creación de la base de datos (sección 3) y la solicitud válida que guarda datos.
+**No se probó:** la instalación desde cero ni la creación de la base con `psql`.
 
 ## 8. Límites
 
-No hay interfaz web (Ionic y Angular), inicio de sesión ni rutas de precio, disponibilidad o pagos.
+Sin despliegue, sin inicio de sesión con roles, sin pantallas de precio, conductores ni pagos.

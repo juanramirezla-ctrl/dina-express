@@ -6,7 +6,7 @@ Escrito el 26 de noviembre de 2026 con ayuda de IA (Claude), para la entrega fin
 
 | Elemento | Qué hace | Evidencia |
 |---|---|---|
-| Pipeline de CI | En cada push (a `main`, `feature/**` y `pruebas-semana-7`) y en cada pull request a `main`: `npm ci`, linter, pruebas y `npm audit` | [ci.yml](../.github/workflows/ci.yml), [ejecuciones](https://github.com/juanramirezla-ctrl/dina-express/actions); la ejecución #3, en `main` (commit 0d5cd05), terminó en verde |
+| Pipeline de CI | En cada push (a `main`, `feature/**` y `pruebas-semana-7`) y en cada pull request a `main`: `npm ci`, linter y pruebas de la API (y `npm audit`); linter, pruebas y compilación de la web | [ci.yml](../.github/workflows/ci.yml), [ejecuciones](https://github.com/juanramirezla-ctrl/dina-express/actions); la ejecución #3, en `main` (commit 0d5cd05), terminó en verde |
 | Rutas de salud | Indican si la API vive y si llega a la base de datos | `GET /salud`, `GET /salud/base-datos` |
 | Revisión de seguridad | Hallazgos y pendientes | [revision_seguridad.md](../revision_seguridad.md) |
 | Bitácora de IA | Qué se pidió a la IA y cómo se verificó | [bitacora_ia.md](../bitacora_ia.md) |
@@ -18,7 +18,7 @@ Escrito el 26 de noviembre de 2026 con ayuda de IA (Claude), para la entrega fin
 | Cuándo | Qué hacer |
 |---|---|
 | Cada cambio | Rama, pruebas primero, pull request y pipeline en verde antes de integrar |
-| Cada día de uso | Consultar `/salud` y `/salud/base-datos`; hacer respaldo |
+| Cada día de uso | Consultar `/salud` y `/salud/base-datos`; hacer respaldo; revisar en el panel las solicitudes y eliminar las que no prosperaron para liberar vehículos |
 | Cada semana | Ejecutar `npm audit` y revisar si hay versiones corregidas |
 | Cada mes | Restaurar un respaldo en una base de prueba para confirmar que sirve |
 
@@ -60,5 +60,6 @@ El respaldo contiene datos personales (nombre, teléfono, correo): se guarda **f
 | Vulnerabilidades de herramientas de desarrollo (H-06) | El 14/11/2026 eran 14, todas de desarrollo; no se corrigieron porque `npm audit fix --force` proponía versiones incompatibles |
 | Vulnerabilidades detectadas después | El 26/11/2026 `npm audit` reporta 28 en total (3 bajas, 16 moderadas, 9 altas). De ellas, **9 están en dependencias de producción** (4 moderadas, 5 altas), según `npm audit --omit=dev`. Sin corregir: requieren cambios de versión mayor en NestJS. Antes de cualquier despliegue hay que resolverlas |
 | Registros y monitoreo | No hay registro de errores ni medición de disponibilidad (RNF-04) |
-| Acceso y datos personales | No hay inicio de sesión, límite de peticiones ni aviso de tratamiento de datos (Ley 1581 de 2012) |
+| Acceso y datos personales | Una sola clave compartida, sin roles ni límite de peticiones; la web pide autorización, pero no queda guardada (Ley 1581 de 2012) |
+| Reservas | No vencen solas: una solicitud falsa deja un vehículo ocupado hasta que se elimine |
 | Respaldos | Probar y automatizar |
